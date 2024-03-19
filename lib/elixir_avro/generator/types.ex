@@ -692,7 +692,6 @@ defmodule ElixirAvro.Generator.Types do
 
   def decode_value(value, reference, module_prefix) when is_binary(reference) do
     module = Names.module_name!(reference, module_prefix)
-
     if function_exported?(module, :from_avro, 1) do
       module.from_avro(value)
     else
