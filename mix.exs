@@ -7,6 +7,7 @@ defmodule ElixirAvro.MixProject do
       version: "0.1.0",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
+      aliases: aliases(),
       deps: deps(),
       dialyzer: [plt_add_apps: [:mix]]
     ]
@@ -31,6 +32,14 @@ defmodule ElixirAvro.MixProject do
       {:timex, "~> 3.7.11"},
       {:typed_struct, "~> 0.3.0"},
       {:uuid, "~> 1.1.8"}
+    ]
+  end
+
+  defp aliases do
+    [
+      "format.all": [
+        "format mix.exs \"lib/**/*.{ex,exs}\" \"test/**/*.{ex,exs}\" \"priv/**/*.{ex,exs}\""
+      ]
     ]
   end
 end
