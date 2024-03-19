@@ -21,7 +21,7 @@ defmodule My.Fantastic.App.Atp.Players.Info.Person do
     field :age, integer(), enforce: true
   end
 
-  def to_avro_map(%__MODULE__{} = r) do
+  def to_avro(%__MODULE__{} = r) do
     {:ok,
      %{
        "fullname" =>
