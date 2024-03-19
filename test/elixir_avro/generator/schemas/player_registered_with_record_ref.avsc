@@ -1,0 +1,70 @@
+{
+    "doc": "A new player is registered in the atp ranking system.",
+    "type": "record",
+    "name": "PlayerRegisteredTwoLevelsNestingRecords",
+    "namespace": "atp.players",
+    "fields": [
+        {
+            "name": "player_id",
+            "type": {
+                "type": "string",
+                "logicalType": "uuid"
+            },
+            "doc": "The unique identifier of the registered player (UUID)."
+        },
+        {
+            "name": "full_name",
+            "type": "string",
+            "doc": "The full name of the registered player."
+        },
+        {
+            "name": "rank",
+            "type": "int",
+            "doc": "The current ranking of the registered player, start counting from 1."
+        },
+        {
+            "name": "registration_date",
+            "type": {
+                "type": "int",
+                "logicalType": "date"
+            },
+            "doc": "The date when the player was registered (number of UTC days from the unix epoch)."
+        },
+        {
+            "name": "sponsor_name",
+            "type": [
+                "null",
+                "string"
+            ],
+            "doc": "The name of the current sponsor (optional)."
+        },
+        {
+            "name": "trainer",
+            "type": "atp.players.Trainer",
+            "doc": "Current trainer."
+        },
+        {
+            "name": "birth_info",
+            "type": {
+                "name": "BirthInfo",
+                "namespace": "atp.players.info",
+                "type": "record",
+                "fields": [
+                    {
+                        "name": "birthday",
+                        "type": {
+                            "type": "int",
+                            "logicalType": "date"
+                        }
+                    },
+                    {
+                        "name": "father",
+                        "type": "atp.players.info.Person",
+                        "doc": "Father's info."
+                    }
+                ],
+                "doc": "Info about a player's birth."
+            }
+        }
+    ]
+}

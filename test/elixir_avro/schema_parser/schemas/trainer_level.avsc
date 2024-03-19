@@ -1,0 +1,11 @@
+{
+    "type": "enum",
+    "name": "TrainerLevel",
+    "namespace": "atp.players.trainers",
+    "symbols": [
+        "BEGINNER",
+        "INTERMEDIATE",
+        "ADVANCE"
+    ],
+    "doc": "Trainer certified level."
+}

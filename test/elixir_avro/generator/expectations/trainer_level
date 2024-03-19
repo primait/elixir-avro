@@ -1,0 +1,28 @@
+defmodule My.Fantastic.App.Atp.Players.Trainers.TrainerLevel do
+  @moduledoc """
+  DO NOT EDIT MANUALLY: This module was automatically generated from an AVRO schema.
+
+  Trainer certified level.
+
+  """
+
+  use ElixirAvro.ElixirEnum
+
+  @values [
+    "BEGINNER",
+    "INTERMEDIATE",
+    "ADVANCE"
+  ]
+
+  def to_avro_map(value) do
+    {:ok, to_avro_string(value)}
+  rescue
+    _ -> {:error, :invalid_enum_value}
+  end
+
+  def from_avro(value) do
+    {:ok, from_avro_string(value)}
+  rescue
+    _ -> {:error, :invalid_enum_string_value}
+  end
+end

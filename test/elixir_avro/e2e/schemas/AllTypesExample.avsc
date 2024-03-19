@@ -1,0 +1,161 @@
+{
+    "type": "record",
+    "name": "AllTypesExample",
+    "namespace": "io.confluent",
+    "doc": "Let's try with all types",
+    "fields": [
+        {
+            "name": "null_field",
+            "type": "null"
+        },
+        {
+            "name": "boolean_field",
+            "type": "boolean",
+            "doc": "Boolean field."
+        },
+        {
+            "name": "int_field",
+            "type": "int"
+        },
+        {
+            "name": "long_field",
+            "type": "long"
+        },
+        {
+            "name": "float_field",
+            "type": "float"
+        },
+        {
+            "name": "double_field",
+            "type": "double"
+        },
+        {
+            "name": "string_field",
+            "type": "string"
+        },
+        {
+            "name": "bytes_field",
+            "type": "bytes"
+        },
+        {
+            "name": "date_field",
+            "type": {
+                "type": "int",
+                "logicalType": "date"
+            },
+            "doc": "Date."
+        },
+        {
+            "name": "uuid_field",
+            "type": {
+                "type": "string",
+                "logicalType": "uuid"
+            }
+        },
+        {
+            "name": "timestamp_millis_field",
+            "type": {
+                "type": "long",
+                "logicalType": "timestamp-millis"
+            }
+        },
+        {
+            "name": "array_field",
+            "type": {
+                "type": "array",
+                "items": "string"
+            },
+            "doc": "Array of strings."
+        },
+        {
+            "name": "map_field",
+            "type": {
+                "type": "map",
+                "values": "int"
+            },
+            "doc": "Map of integers."
+        },
+        {
+            "name": "enum_field",
+            "type": {
+                "type": "enum",
+                "name": "ExampleEnum",
+                "symbols": [
+                    "SYMBOL1",
+                    "SYMBOL2",
+                    "SYMBOL3"
+                ]
+            },
+            "doc": "Inline enum."
+        },
+        {
+            "name": "union_field",
+            "type": [
+                "int",
+                "string",
+                {
+                    "type": "array",
+                    "items": "long"
+                },
+                "null"
+            ],
+            "doc": "Nullable union of integer, string and array of longs."
+        },
+        {
+            "name": "record_field",
+            "doc": "Inline record.",
+            "type": {
+                "type": "record",
+                "name": "ExampleRecord",
+                "fields": [
+                    {
+                        "name": "nested_string",
+                        "type": "string"
+                    },
+                    {
+                        "name": "nested_int",
+                        "type": "int"
+                    },
+                    {
+                        "name": "nested_enum",
+                        "type": {
+                            "type": "enum",
+                            "name": "NestedEnum",
+                            "symbols": [
+                                "NESTED_SYMBOL1",
+                                "NESTED_SYMBOL2"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "nested_record",
+                        "type": {
+                            "type": "record",
+                            "name": "NestedRecord",
+                            "fields": [
+                                {
+                                    "name": "nested_string",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "nested_enum",
+                                    "type": "NestedEnum"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "union_with_refs_field",
+                        "type": [
+                            "null",
+                            "NestedEnum",
+                            "ExampleEnum",
+                            "NestedRecord"
+                        ],
+                        "doc": "Nullable union of integer, string and array of longs."
+                    }
+                ]
+            }
+        }
+    ]
+}

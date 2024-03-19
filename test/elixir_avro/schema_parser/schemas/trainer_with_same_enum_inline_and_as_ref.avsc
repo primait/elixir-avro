@@ -1,0 +1,33 @@
+{
+    "name": "Trainer",
+    "namespace": "atp.players",
+    "type": "record",
+    "fields": [
+        {
+            "name": "fullname",
+            "type": "string",
+            "doc": "Full name of the trainer."
+        },
+        {
+            "name": "atp_level",
+            "type": {
+                "type": "enum",
+                "name": "TrainerLevel",
+                "namespace": "atp.players.trainers",
+                "symbols": [
+                    "BEGINNER",
+                    "INTERMEDIATE",
+                    "ADVANCE"
+                ],
+                "doc": "Trainer certified level."
+            },
+            "doc": "Trainer certified level by ATP."
+        },
+        {
+            "name": "fit_level",
+            "type": "atp.players.trainers.TrainerLevel",
+            "doc": "Trainer certified level by FIT."
+        }
+    ],
+    "doc": "A player trainer."
+}
