@@ -3,6 +3,12 @@ defmodule ElixirAvro.Generator.Content do
 
   alias ElixirAvro.Generator.Names
 
+  @type field_meta :: %{
+          doc: String.t(),
+          name: String.t(),
+          erlavro_type: String.t()
+        }
+
   @spec modules_content_from_schema(
           schema_content :: String.t(),
           read_schema_fun :: fun(),
@@ -36,6 +42,42 @@ defmodule ElixirAvro.Generator.Content do
       eval_template!(template_path, bindings, locals_without_parens: [{:field, :*}])
 
     {module_name, module_content}
+  end
+
+  @spec get_specific_bindings(tuple) :: [fields_meta: [field_meta]]
+  defp get_specific_bindings({:avro_record_type, _, _, _, _, _, _, _} = erlavro_schema_parsed) do
+    [fields_meta: fields_meta(erlavro_schema_parsed)]
+  end
+
+  defp get_specific_bindings({:avro_enum_type, _, _, _, _, symbols, _, _}) do
+    [values: symbols]
+  end
+
+  @spec template_path(tuple) :: String.t()
+  defp template_path({:avro_record_type, _, _, _, _, _, _, _}) do
+    Path.join(__DIR__, "templates/record.ex.eex")
+  end
+
+  defp template_path({:avro_enum_type, _, _, _, _, _, _, _}) do
+    Path.join(__DIR__, "templates/enum.ex.eex")
+  end
+
+  @spec module_name(tuple, String.t()) :: String.t()
+  defp module_name({:avro_record_type, _, _, _, _, _, fullname, _}, module_prefix) do
+    module_prefix <> "." <> Names.camelize(fullname)
+  end
+
+  defp module_name({:avro_enum_type, _, _, _, _, _, fullname, _}, module_prefix) do
+    module_prefix <> "." <> Names.camelize(fullname)
+  end
+
+  @spec module_doc(tuple) :: String.t()
+  defp module_doc({:avro_record_type, _, _, doc, _, _, _, _}) do
+    doc
+  end
+
+  defp module_doc({:avro_enum_type, _, _, _, doc, _, _, _}) do
+    doc
   end
 
   # Evaluate the template file at `path` using the given `bindings`, then formats
@@ -96,6 +138,7 @@ defmodule ElixirAvro.Generator.Content do
     Enum.map(fields, &field_meta/1)
   end
 
+  @spec field_meta(tuple) :: field_meta
   defp field_meta({:avro_record_field, name, doc, type, :undefined, :ascending, _aliases}) do
     %{
       doc: doc,
