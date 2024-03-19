@@ -24,3 +24,7 @@ elixir_avro-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# Elixir-avro generated files
+test/elixir_avro/e2e/generated/
+test/mix/tasks/generated/
