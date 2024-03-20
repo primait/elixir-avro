@@ -1,7 +1,7 @@
 defmodule ElixirAvro.Schema.ParserTest do
   use ExUnit.Case
 
-  alias ElixirAvro.Schema.Parser
+  alias ElixirAvro.Schema
 
   @schemas_path "test/elixir_avro/schema_parser/schemas"
 
@@ -11,7 +11,7 @@ defmodule ElixirAvro.Schema.ParserTest do
                "atp.players.PlayerRegistered" => player_registered_erlavro(),
                "atp.players.Trainer" => trainer_nested_erlavro()
              } ==
-               Parser.parse(schema(), fn _ -> "" end)
+               Schema.Parser.parse(schema(), fn _ -> "" end)
     end
 
     test "enum" do
@@ -19,7 +19,7 @@ defmodule ElixirAvro.Schema.ParserTest do
                "atp.players.Trainer" => trainer_with_enum(),
                "atp.players.trainers.TrainerLevel" => trainer_level_erlavro()
              } ==
-               Parser.parse(schema4(), fn _ -> "" end)
+               Schema.Parser.parse(schema4(), fn _ -> "" end)
     end
   end
 
@@ -31,7 +31,7 @@ defmodule ElixirAvro.Schema.ParserTest do
                "atp.players.PlayerRegistered" => player_registered_erlavro(),
                "atp.players.Trainer" => trainer_ref_erlavro()
              } ==
-               Parser.parse(schema2(), schema_reader)
+               Schema.Parser.parse(schema2(), schema_reader)
     end
 
     test "enum" do
@@ -43,7 +43,7 @@ defmodule ElixirAvro.Schema.ParserTest do
                "atp.players.Trainer" => trainer_with_enum(),
                "atp.players.trainers.TrainerLevel" => trainer_level_erlavro()
              } ==
-               Parser.parse(schema5(), schema_reader)
+               Schema.Parser.parse(schema5(), schema_reader)
     end
 
     test "cross reference to the current schema" do
@@ -51,7 +51,7 @@ defmodule ElixirAvro.Schema.ParserTest do
                "atp.players.Trainer" => trainer_with_same_enum_inline_and_as_ref(),
                "atp.players.trainers.TrainerLevel" => trainer_level_erlavro()
              } ==
-               Parser.parse(schema6(), fn _ -> "" end)
+               Schema.Parser.parse(schema6(), fn _ -> "" end)
     end
   end
 
@@ -69,106 +69,107 @@ defmodule ElixirAvro.Schema.ParserTest do
                "atp.players.info.BirthInfo" => birth_info_erlavro(),
                "atp.players.info.Person" => person_erlavro()
              } ==
-               Parser.parse(schema3(), schema_reader)
+               Schema.Parser.parse(schema3(), schema_reader)
     end
   end
 
   defp birth_info_erlavro() do
-    {
-      :avro_record_type,
-      "BirthInfo",
-      "atp.players.info",
-      "Info about a player's birth.",
-      [],
-      [
+    %Schema.Record{
+      name: "BirthInfo",
+      fullname: "atp.players.info.BirthInfo",
+      namespace: "atp.players.info",
+      doc: "Info about a player's birth.",
+      fields: [
         {:avro_record_field, "birthday", "",
-         {:avro_primitive_type, "int", [{"logicalType", "date"}]}, :undefined, :ascending, []},
+          {:avro_primitive_type, "int", [{"logicalType", "date"}]}, :undefined, :ascending, []},
         {:avro_record_field, "father", "Father's info.", "atp.players.info.Person", :undefined,
-         :ascending, []}
-      ],
-      "atp.players.info.BirthInfo",
-      []
+          :ascending, []}
+      ]
     }
   end
 
   defp person_erlavro() do
-    {
-      :avro_record_type,
-      "Person",
-      "",
-      "",
-      [],
-      [
+    %Schema.Record{
+      name: "Person",
+      fullname: "atp.players.info.Person",
+      namespace: "",
+      doc: "",
+      fields: [
         {:avro_record_field, "fullname", "", {:avro_primitive_type, "string", []}, :undefined,
-         :ascending, []},
+          :ascending, []},
         {:avro_record_field, "age", "", {:avro_primitive_type, "int", []}, :undefined, :ascending,
-         []}
-      ],
-      "atp.players.info.Person",
-      []
+          []}
+      ]
     }
   end
 
   defp trainer_nested_erlavro() do
     # Note: here we don't have an explicit namespace since it is inherited by the parent type
-    {:avro_record_type, "Trainer", "", "A player trainer.", [],
-     [
-       {:avro_record_field, "fullname", "Full name of the trainer.",
-        {:avro_primitive_type, "string", []}, :undefined, :ascending, []}
-     ], "atp.players.Trainer", []}
+    %Schema.Record{
+      name: "Trainer",
+      fullname: "atp.players.Trainer",
+      namespace: "",
+      doc: "A player trainer.",
+      fields: [
+        {:avro_record_field, "fullname", "Full name of the trainer.",
+          {:avro_primitive_type, "string", []}, :undefined, :ascending, []}
+      ]
+    }
   end
 
   defp trainer_ref_erlavro() do
     # Note: here we have an explicit namespace since the schema is defined in its own file
-    {
-      :avro_record_type,
-      "Trainer",
-      "atp.players",
-      "A player trainer.",
-      [],
-      [
+    %Schema.Record{
+      name: "Trainer",
+      fullname: "atp.players.Trainer",
+      namespace: "atp.players",
+      doc: "A player trainer.",
+      fields: [
         {:avro_record_field, "fullname", "Full name of the trainer.",
-         {:avro_primitive_type, "string", []}, :undefined, :ascending, []}
-      ],
-      "atp.players.Trainer",
-      []
+          {:avro_primitive_type, "string", []}, :undefined, :ascending, []}
+      ]
     }
   end
 
   defp player_registered_erlavro() do
-    {:avro_record_type, "PlayerRegistered", "atp.players",
-     "A new player is registered in the atp ranking system.", [],
-     [
-       {:avro_record_field, "player_id", "The unique identifier of the registered player (UUID).",
-        {:avro_primitive_type, "string", [{"logicalType", "uuid"}]}, :undefined, :ascending, []},
-       {:avro_record_field, "full_name", "The full name of the registered player.",
-        {:avro_primitive_type, "string", []}, :undefined, :ascending, []},
-       {:avro_record_field, "rank",
-        "The current ranking of the registered player, start counting from 1.",
-        {:avro_primitive_type, "int", []}, :undefined, :ascending, []},
-       {:avro_record_field, "registration_date",
-        "The date when the player was registered (number of UTC days from the unix epoch).",
-        {:avro_primitive_type, "int", [{"logicalType", "date"}]}, :undefined, :ascending, []},
-       {:avro_record_field, "sponsor_name", "The name of the current sponsor (optional).",
-        {:avro_union_type,
-         {2,
-          {1, {:avro_primitive_type, "string", []},
-           {0, {:avro_primitive_type, "null", []}, nil, nil}, nil}},
-         {2, {"string", {1, true}, {"null", {0, true}, nil, nil}, nil}}}, :undefined, :ascending,
-        []},
-       {:avro_record_field, "trainer", "Current trainer.", "atp.players.Trainer", :undefined,
-        :ascending, []}
-     ], "atp.players.PlayerRegistered", []}
+    %Schema.Record{
+      name: "PlayerRegistered",
+      fullname: "atp.players.PlayerRegistered",
+      namespace: "atp.players",
+      doc: "A new player is registered in the atp ranking system.",
+      fields: [
+        {:avro_record_field, "player_id",
+         "The unique identifier of the registered player (UUID).",
+         {:avro_primitive_type, "string", [{"logicalType", "uuid"}]}, :undefined, :ascending,
+         []},
+        {:avro_record_field, "full_name", "The full name of the registered player.",
+         {:avro_primitive_type, "string", []}, :undefined, :ascending, []},
+        {:avro_record_field, "rank",
+         "The current ranking of the registered player, start counting from 1.",
+         {:avro_primitive_type, "int", []}, :undefined, :ascending, []},
+        {:avro_record_field, "registration_date",
+         "The date when the player was registered (number of UTC days from the unix epoch).",
+         {:avro_primitive_type, "int", [{"logicalType", "date"}]}, :undefined, :ascending, []},
+        {:avro_record_field, "sponsor_name", "The name of the current sponsor (optional).",
+         {:avro_union_type,
+          {2,
+           {1, {:avro_primitive_type, "string", []},
+            {0, {:avro_primitive_type, "null", []}, nil, nil}, nil}},
+          {2, {"string", {1, true}, {"null", {0, true}, nil, nil}, nil}}}, :undefined,
+         :ascending, []},
+        {:avro_record_field, "trainer", "Current trainer.", "atp.players.Trainer", :undefined,
+         :ascending, []}
+      ]
+    }
   end
 
   defp player_registered2_erlavro() do
-    {
-      :avro_record_type,
-      "PlayerRegisteredTwoLevelsNestingRecords",
-      "atp.players",
-      "A new player is registered in the atp ranking system.",
-      [],
-      [
+    %Schema.Record{
+      name: "PlayerRegisteredTwoLevelsNestingRecords",
+      fullname: "atp.players.PlayerRegisteredTwoLevelsNestingRecords",
+      namespace: "atp.players",
+      doc: "A new player is registered in the atp ranking system.",
+      fields: [
         {:avro_record_field, "player_id",
          "The unique identifier of the registered player (UUID).",
          {:avro_primitive_type, "string", [{"logicalType", "uuid"}]}, :undefined, :ascending, []},
@@ -191,53 +192,51 @@ defmodule ElixirAvro.Schema.ParserTest do
          :ascending, []},
         {:avro_record_field, "birth_info", "", "atp.players.info.BirthInfo", :undefined,
          :ascending, []}
-      ],
-      "atp.players.PlayerRegisteredTwoLevelsNestingRecords",
-      []
+      ]
     }
   end
 
+  # Note: where is the enum?
   defp trainer_with_enum() do
-    {
-      :avro_record_type,
-      "Trainer",
-      "atp.players",
-      "A player trainer.",
-      [],
-      [
+    %Schema.Record{
+      name: "Trainer",
+      fullname: "atp.players.Trainer",
+      namespace: "atp.players",
+      doc: "A player trainer.",
+      fields: [
         {:avro_record_field, "fullname", "Full name of the trainer.",
          {:avro_primitive_type, "string", []}, :undefined, :ascending, []},
         {:avro_record_field, "level", "", "atp.players.trainers.TrainerLevel", :undefined,
          :ascending, []}
-      ],
-      "atp.players.Trainer",
-      []
+      ]
     }
   end
 
   defp trainer_with_same_enum_inline_and_as_ref() do
-    {
-      :avro_record_type,
-      "Trainer",
-      "atp.players",
-      "A player trainer.",
-      [],
-      [
+    %Schema.Record{
+      name: "Trainer",
+      fullname: "atp.players.Trainer",
+      namespace: "atp.players",
+      doc: "A player trainer.",
+      fields: [
         {:avro_record_field, "fullname", "Full name of the trainer.",
          {:avro_primitive_type, "string", []}, :undefined, :ascending, []},
         {:avro_record_field, "atp_level", "Trainer certified level by ATP.",
          "atp.players.trainers.TrainerLevel", :undefined, :ascending, []},
         {:avro_record_field, "fit_level", "Trainer certified level by FIT.",
          "atp.players.trainers.TrainerLevel", :undefined, :ascending, []}
-      ],
-      "atp.players.Trainer",
-      []
+      ]
     }
   end
 
   defp trainer_level_erlavro() do
-    {:avro_enum_type, "TrainerLevel", "atp.players.trainers", [], "Trainer certified level.",
-     ["BEGINNER", "INTERMEDIATE", "ADVANCE"], "atp.players.trainers.TrainerLevel", []}
+    %Schema.Enum{
+      name: "TrainerLevel",
+      fullname: "atp.players.trainers.TrainerLevel",
+      namespace: "atp.players.trainers",
+      doc: "Trainer certified level.",
+      symbols: ["BEGINNER", "INTERMEDIATE", "ADVANCE"]
+    }
   end
 
   defp schema() do

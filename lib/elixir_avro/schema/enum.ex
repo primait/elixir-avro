@@ -3,35 +3,30 @@ defmodule ElixirAvro.Schema.Enum do
 
   @type t :: %__MODULE__{
           name: String.t(),
+          fullname: String.t(),
           namespace: String.t(),
-          aliases: [],
           doc: String.t(),
           symbols: [String.t()],
-          fullname: String.t(),
+          template_path: String.t(),
+          aliases: [],
           custom: []
         }
 
-  defstruct [:name, :namespace, :aliases, :doc, :symbols, :fullname, custom: []]
+  @template_path Path.join(__DIR__, "../generator/templates/enum.ex.eex")
 
-  @spec from_tuple({
-          :avro_enum_type,
-          String.t(),
-          String.t(),
-          [],
-          String.t(),
-          [String.t()],
-          String.t(),
-          []
-        }) :: t()
-  def from_tuple({:avro_enum_type, name, namespace, aliases, doc, symbols, fullname, custom}) do
-    %__MODULE__{
-      name: name,
-      namespace: namespace,
-      aliases: aliases,
-      doc: doc,
-      symbols: symbols,
-      fullname: fullname,
-      custom: custom
-    }
+  defstruct [
+    :name,
+    :fullname,
+    :namespace,
+    :doc,
+    :symbols,
+    template_path: @template_path,
+    aliases: [],
+    custom: []
+  ]
+
+  @spec get_specific_bindings(t()) :: [tuple]
+  def get_specific_bindings(%__MODULE__{symbols: symbols}) do
+    [values: symbols]
   end
 end

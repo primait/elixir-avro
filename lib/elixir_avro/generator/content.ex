@@ -2,12 +2,7 @@ defmodule ElixirAvro.Generator.Content do
   @moduledoc false
 
   alias ElixirAvro.Generator.Names
-
-  @type field_meta :: %{
-          doc: String.t(),
-          name: String.t(),
-          erlavro_type: String.t()
-        }
+  alias ElixirAvro.Schema
 
   @spec modules_content_from_schema(
           schema_content :: String.t(),
@@ -17,68 +12,29 @@ defmodule ElixirAvro.Generator.Content do
   def modules_content_from_schema(root_schema_content, read_schema_fun, module_prefix) do
     root_schema_content
     |> ElixirAvro.Schema.Parser.parse(read_schema_fun)
-    |> Enum.map(fn {_fullname, erlavro_type} -> module_content(erlavro_type, module_prefix) end)
+    |> Enum.map(fn {_fullname, schema_type} -> module_content(schema_type, module_prefix) end)
     |> Enum.into(%{})
   end
 
-  @spec module_content(erlavro_schema_parsed :: tuple, module_prefix :: String.t()) ::
-          {String.t(), String.t()}
-  defp module_content(
-         erlavro_schema_parsed,
-         module_prefix
-       ) do
-    moduledoc = module_doc(erlavro_schema_parsed)
-    module_name = module_name(erlavro_schema_parsed, module_prefix)
+  @spec module_content(
+          schema_type :: Schema.Record.t() | Schema.Enum.t(),
+          module_prefix :: String.t()
+        ) :: {String.t(), String.t()}
+  defp module_content(schema_type, module_prefix) do
+    module_name = module_name(schema_type, module_prefix)
+    specific_bindings = apply(schema_type.__struct__, :get_specific_bindings, [schema_type])
 
     bindings =
       [
-        moduledoc: moduledoc,
+        moduledoc: schema_type.doc,
         module_name: module_name,
         module_prefix: module_prefix
-      ] ++ get_specific_bindings(erlavro_schema_parsed)
+      ] ++ specific_bindings
 
     module_content =
-      eval_template!(template_path(erlavro_schema_parsed), bindings,
-        locals_without_parens: [{:field, :*}]
-      )
+      eval_template!(schema_type.template_path, bindings, locals_without_parens: [{:field, :*}])
 
     {module_name, module_content}
-  end
-
-  @spec get_specific_bindings(tuple) :: [fields_meta: [field_meta]]
-  defp get_specific_bindings({:avro_record_type, _, _, _, _, _, _, _} = erlavro_schema_parsed) do
-    [fields_meta: fields_meta(erlavro_schema_parsed)]
-  end
-
-  defp get_specific_bindings({:avro_enum_type, _, _, _, _, symbols, _, _}) do
-    [values: symbols]
-  end
-
-  @spec template_path(tuple) :: String.t()
-  defp template_path({:avro_record_type, _, _, _, _, _, _, _}) do
-    Path.join(__DIR__, "templates/record.ex.eex")
-  end
-
-  defp template_path({:avro_enum_type, _, _, _, _, _, _, _}) do
-    Path.join(__DIR__, "templates/enum.ex.eex")
-  end
-
-  @spec module_name(tuple, String.t()) :: String.t()
-  defp module_name({:avro_record_type, _, _, _, _, _, fullname, _}, module_prefix) do
-    module_prefix <> "." <> Names.camelize(fullname)
-  end
-
-  defp module_name({:avro_enum_type, _, _, _, _, _, fullname, _}, module_prefix) do
-    module_prefix <> "." <> Names.camelize(fullname)
-  end
-
-  @spec module_doc(tuple) :: String.t()
-  defp module_doc({:avro_record_type, _, _, doc, _, _, _, _}) do
-    doc
-  end
-
-  defp module_doc({:avro_enum_type, _, _, _, doc, _, _, _}) do
-    doc
   end
 
   # Evaluate the template file at `path` using the given `bindings`, then formats
@@ -95,17 +51,12 @@ defmodule ElixirAvro.Generator.Content do
     |> Kernel.<>("\n")
   end
 
-  @spec fields_meta(tuple) :: [field_meta]
-  defp fields_meta({:avro_record_type, _name, _namespace, _doc, _, fields, _fullname, _}) do
-    Enum.map(fields, &field_meta/1)
+  @spec module_name(Schema.Record.t() | Schema.Enum.t(), String.t()) :: String.t()
+  defp module_name(%Schema.Record{fullname: fullname}, module_prefix) do
+    module_prefix <> "." <> Names.camelize(fullname)
   end
 
-  @spec field_meta(tuple) :: field_meta
-  defp field_meta({:avro_record_field, name, doc, type, :undefined, :ascending, _aliases}) do
-    %{
-      doc: doc,
-      name: name,
-      erlavro_type: type
-    }
+  defp module_name(%Schema.Enum{fullname: fullname}, module_prefix) do
+    module_prefix <> "." <> Names.camelize(fullname)
   end
 end
