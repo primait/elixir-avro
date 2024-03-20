@@ -164,8 +164,13 @@ defmodule ElixirAvro.Generator.Types do
 
   iex> to_spec_string!("test.Type", "my_prefix")
   "MyPrefix.Test.Type.t()"
+
+  ## Unsupported types
+
+  iex> to_spec_string!({:avro_unsupported_type, {:avro_primitive_type, "int", []}, []}, "my_prefix")
+  ** (ArgumentError) unsupported avro type: {:avro_unsupported_type, {:avro_primitive_type, "int", []}, []}
   """
-  # TODO should we rename this to something like to_typespec ?
+  # NOTE: should we rename this to something like to_typespec ?
   @spec to_spec_string!(:avro.type_or_name(), module_prefix :: String.t()) ::
           String.t() | no_return()
   def to_spec_string!({:avro_primitive_type, name, custom}, _module_prefix) do
@@ -203,7 +208,6 @@ defmodule ElixirAvro.Generator.Types do
     "#{Names.camelize(module_prefix)}.#{Names.camelize(reference)}.t()"
   end
 
-  # TODO add test for this
   def to_spec_string!(type, _base_path) do
     raise ArgumentError, message: "unsupported avro type: #{inspect(type)}"
   end

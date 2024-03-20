@@ -81,9 +81,9 @@ defmodule ElixirAvro.Schema.ParserTest do
       doc: "Info about a player's birth.",
       fields: [
         {:avro_record_field, "birthday", "",
-          {:avro_primitive_type, "int", [{"logicalType", "date"}]}, :undefined, :ascending, []},
+         {:avro_primitive_type, "int", [{"logicalType", "date"}]}, :undefined, :ascending, []},
         {:avro_record_field, "father", "Father's info.", "atp.players.info.Person", :undefined,
-          :ascending, []}
+         :ascending, []}
       ]
     }
   end
@@ -96,9 +96,9 @@ defmodule ElixirAvro.Schema.ParserTest do
       doc: "",
       fields: [
         {:avro_record_field, "fullname", "", {:avro_primitive_type, "string", []}, :undefined,
-          :ascending, []},
+         :ascending, []},
         {:avro_record_field, "age", "", {:avro_primitive_type, "int", []}, :undefined, :ascending,
-          []}
+         []}
       ]
     }
   end
@@ -112,7 +112,7 @@ defmodule ElixirAvro.Schema.ParserTest do
       doc: "A player trainer.",
       fields: [
         {:avro_record_field, "fullname", "Full name of the trainer.",
-          {:avro_primitive_type, "string", []}, :undefined, :ascending, []}
+         {:avro_primitive_type, "string", []}, :undefined, :ascending, []}
       ]
     }
   end
@@ -126,7 +126,7 @@ defmodule ElixirAvro.Schema.ParserTest do
       doc: "A player trainer.",
       fields: [
         {:avro_record_field, "fullname", "Full name of the trainer.",
-          {:avro_primitive_type, "string", []}, :undefined, :ascending, []}
+         {:avro_primitive_type, "string", []}, :undefined, :ascending, []}
       ]
     }
   end
@@ -140,8 +140,7 @@ defmodule ElixirAvro.Schema.ParserTest do
       fields: [
         {:avro_record_field, "player_id",
          "The unique identifier of the registered player (UUID).",
-         {:avro_primitive_type, "string", [{"logicalType", "uuid"}]}, :undefined, :ascending,
-         []},
+         {:avro_primitive_type, "string", [{"logicalType", "uuid"}]}, :undefined, :ascending, []},
         {:avro_record_field, "full_name", "The full name of the registered player.",
          {:avro_primitive_type, "string", []}, :undefined, :ascending, []},
         {:avro_record_field, "rank",
@@ -155,8 +154,8 @@ defmodule ElixirAvro.Schema.ParserTest do
           {2,
            {1, {:avro_primitive_type, "string", []},
             {0, {:avro_primitive_type, "null", []}, nil, nil}, nil}},
-          {2, {"string", {1, true}, {"null", {0, true}, nil, nil}, nil}}}, :undefined,
-         :ascending, []},
+          {2, {"string", {1, true}, {"null", {0, true}, nil, nil}, nil}}}, :undefined, :ascending,
+         []},
         {:avro_record_field, "trainer", "Current trainer.", "atp.players.Trainer", :undefined,
          :ascending, []}
       ]
