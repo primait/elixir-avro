@@ -317,6 +317,19 @@ defmodule ElixirAvro.Generator.Types do
   ...>   {2, {"string", {1, true}, {"null", {0, true}, nil, nil}, nil}}}, "")
   {:error, "no compatible type found"}
 
+
+  ## Reference types
+
+  iex> (fn ->
+  ...>   Code.eval_string("defmodule MyPrefix.TestType do
+  ...>     def to_avro(value), do: {:ok, value}
+  ...>   end")
+  ...>   encode_value("value", "TestType", "Elixir.MyPrefix")
+  ...> end).()
+  {:ok, "value"}
+
+  iex> encode_value(%{}, "TestUnknownType", "Elixir")
+  {:error, "unknown reference: TestUnknownType"}
   """
   @spec encode_value(any(), :avro.type_or_name(), module_prefix :: String.t()) ::
           {:ok, any()} | {:error, any()}
@@ -359,9 +372,11 @@ defmodule ElixirAvro.Generator.Types do
     end)
   end
 
-  # TODO how should we test this?
   def encode_value(value, reference, module_prefix) when is_binary(reference) do
-    module = :"#{module_prefix}.#{Names.camelize(reference)}"
+    module = case module_prefix do
+      _ when is_nil(module_prefix) or module_prefix == "" -> :"#{Names.camelize(reference)}"
+      _ -> :"#{module_prefix}.#{Names.camelize(reference)}"
+    end
 
     if function_exported?(module, :to_avro, 1) do
       module.to_avro(value)
