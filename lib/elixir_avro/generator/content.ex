@@ -2,7 +2,6 @@ defmodule ElixirAvro.Generator.Content do
   @moduledoc false
 
   alias ElixirAvro.Generator.Names
-  alias ElixirAvro.Schema
 
   @spec modules_content_from_schema(
           schema_content :: String.t(),
@@ -17,22 +16,24 @@ defmodule ElixirAvro.Generator.Content do
   end
 
   @spec module_content(
-          schema_type :: Schema.Record.t() | Schema.Enum.t(),
+          schema :: :avro.avro_type(),
           module_prefix :: String.t()
         ) :: {String.t(), String.t()}
-  defp module_content(schema_type, module_prefix) do
-    module_name = module_name(schema_type, module_prefix)
-    specific_bindings = apply(schema_type.__struct__, :get_specific_bindings, [schema_type])
+  defp module_content(schema, module_prefix) do
+    moduledoc = module_doc(schema)
+    module_name = module_name(schema, module_prefix)
+    specific_bindings = get_spefic_bindings(schema)
+    template_path = template_path(schema)
 
     bindings =
       [
-        moduledoc: schema_type.doc,
+        moduledoc: moduledoc,
         module_name: module_name,
         module_prefix: module_prefix
       ] ++ specific_bindings
 
     module_content =
-      eval_template!(schema_type.template_path, bindings, locals_without_parens: [{:field, :*}])
+      eval_template!(template_path, bindings, locals_without_parens: [{:field, :*}])
 
     {module_name, module_content}
   end
@@ -51,12 +52,64 @@ defmodule ElixirAvro.Generator.Content do
     |> Kernel.<>("\n")
   end
 
-  @spec module_name(Schema.Record.t() | Schema.Enum.t(), String.t()) :: String.t()
-  defp module_name(%Schema.Record{fullname: fullname}, module_prefix) do
+  defp get_spefic_bindings(
+         {:avro_record_type, _name, _namespace, _doc, _, _fields, _fullname, _} =
+           erlavro_schema_parsed
+       ) do
+    [fields_meta: fields_meta(erlavro_schema_parsed)]
+  end
+
+  defp get_spefic_bindings(
+         {:avro_enum_type, _name, _namespace, _aliases, _doc, symbols, _fullname, _custom}
+       ) do
+    [values: symbols]
+  end
+
+  defp template_path({:avro_record_type, _name, _namespace, _doc, _, _fields, _fullname, _}) do
+    Path.join(__DIR__, "templates/record.ex.eex")
+  end
+
+  defp template_path(
+         {:avro_enum_type, _name, _namespace, _aliases, _doc, _symbols, _fullname, _custom}
+       ) do
+    Path.join(__DIR__, "templates/enum.ex.eex")
+  end
+
+  defp module_name(
+         {:avro_record_type, _name, _namespace, _doc, _, _fields, fullname, _},
+         module_prefix
+       ) do
     module_prefix <> "." <> Names.camelize(fullname)
   end
 
-  defp module_name(%Schema.Enum{fullname: fullname}, module_prefix) do
+  defp module_name(
+         {:avro_enum_type, _name, _namespace, _aliases, _doc, _symbols, fullname, _custom},
+         module_prefix
+       ) do
     module_prefix <> "." <> Names.camelize(fullname)
+  end
+
+  defp module_doc(
+         {:avro_record_type, _name, _namespace, doc, _aliases, _fields, _fullname, _custom}
+       ) do
+    doc
+  end
+
+  defp module_doc(
+         {:avro_enum_type, _name, _namespace, _aliases, doc, _symbols, _fullname, _custom}
+       ) do
+    doc
+  end
+
+  defp fields_meta({:avro_record_type, _name, _namespace, _doc, _, fields, _fullname, _}) do
+    Enum.map(fields, &field_meta/1)
+  end
+
+  defp field_meta({:avro_record_field, name, doc, type, :undefined, :ascending, _aliases}) do
+    %{
+      doc: doc,
+      name: name,
+      erlavro_type: type
+    }
   end
 end

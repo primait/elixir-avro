@@ -373,10 +373,11 @@ defmodule ElixirAvro.Generator.Types do
   end
 
   def encode_value(value, reference, module_prefix) when is_binary(reference) do
-    module = case module_prefix do
-      _ when is_nil(module_prefix) or module_prefix == "" -> :"#{Names.camelize(reference)}"
-      _ -> :"#{module_prefix}.#{Names.camelize(reference)}"
-    end
+    module =
+      case module_prefix do
+        _ when is_nil(module_prefix) or module_prefix == "" -> :"#{Names.camelize(reference)}"
+        _ -> :"#{module_prefix}.#{Names.camelize(reference)}"
+      end
 
     if function_exported?(module, :to_avro, 1) do
       module.to_avro(value)

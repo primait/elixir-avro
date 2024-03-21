@@ -23,7 +23,7 @@ defmodule ElixirAvro.Schema.Parser do
     add_references_types(erlavro_schema_parsed, lookup_table, read_schema_fun)
 
     :avro_schema_store.get_all_types(lookup_table)
-    |> Enum.map(&{:avro.get_type_fullname(&1), internal_from_tuple(&1)})
+    |> Enum.map(&{:avro.get_type_fullname(&1), &1})
     |> Enum.into(%{})
   end
 
@@ -47,34 +47,5 @@ defmodule ElixirAvro.Schema.Parser do
       |> read_schema_fun.()
       |> :avro_json_decoder.decode_schema(allow_bad_references: true)
     end
-  end
-
-  @spec internal_from_tuple(tuple) :: Schema.Record.t() | Schema.Enum.t()
-  defp internal_from_tuple(
-         {:avro_record_type, name, namespace, doc, aliases, fields, fullname, custom}
-       ) do
-    %Schema.Record{
-      name: name,
-      fullname: fullname,
-      namespace: namespace,
-      doc: doc,
-      aliases: aliases,
-      fields: fields,
-      custom: custom
-    }
-  end
-
-  defp internal_from_tuple(
-         {:avro_enum_type, name, namespace, aliases, doc, symbols, fullname, custom}
-       ) do
-    %Schema.Enum{
-      name: name,
-      fullname: fullname,
-      namespace: namespace,
-      aliases: aliases,
-      doc: doc,
-      symbols: symbols,
-      custom: custom
-    }
   end
 end
