@@ -2,7 +2,6 @@ defmodule ElixirAvro.Generator.Content do
   @moduledoc false
 
   alias ElixirAvro.Generator.Names
-  alias ElixirAvro.Schema
 
   @spec modules_content_from_schema(
           schema_content :: String.t(),
@@ -28,13 +27,13 @@ defmodule ElixirAvro.Generator.Content do
 
     bindings =
       [
-        moduledoc: schema_type.doc,
+        moduledoc: moduledoc,
         module_name: module_name,
         module_prefix: module_prefix
       ] ++ specific_bindings
 
     module_content =
-      eval_template!(schema_type.template_path, bindings, locals_without_parens: [{:field, :*}])
+      eval_template!(template_path, bindings, locals_without_parens: [{:field, :*}])
 
     {module_name, module_content}
   end
@@ -97,7 +96,11 @@ defmodule ElixirAvro.Generator.Content do
     Enum.map(fields, &field_meta/1)
   end
 
-  defp module_name(%Schema.Enum{fullname: fullname}, module_prefix) do
-    module_prefix <> "." <> Names.camelize(fullname)
+  defp field_meta({:avro_record_field, name, doc, type, :undefined, :ascending, _aliases}) do
+    %{
+      doc: doc,
+      name: name,
+      erlavro_type: type
+    }
   end
 end
