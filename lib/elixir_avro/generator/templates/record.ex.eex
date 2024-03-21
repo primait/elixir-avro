@@ -1,0 +1,51 @@
+defmodule <%= module_name %> do
+  @moduledoc """
+  DO NOT EDIT MANUALLY: This module was automatically generated from an AVRO schema.
+
+  <%= moduledoc %>
+
+  Fields:
+  <%= for field <- fields_meta do %>
+    <%= Excribe.format(String.trim("`#{field.name}`: #{field.doc}") <> "\n", %{hanging: 6, width: 80, indent: 0, align: :left}) %>
+  <% end %>
+  """
+
+  use TypedStruct
+
+  @expected_keys MapSet.new(
+    [<%= fields_meta |> Enum.map(&~s/"#{&1.name}"/) |> Enum.join(", ") %>]
+  )
+
+  typedstruct do
+    <%= for field <- fields_meta do %>field :<%= field.name %>, <%= ElixirAvro.Generator.Types.to_typedstruct_spec!(field.erlavro_type, module_prefix) %>
+    <% end %>
+  end
+
+  def to_avro_map(%__MODULE__{} = r) do
+    {:ok,
+      %{
+        <%= fields_meta |> Enum.map(&~s/"#{&1.name}" => ElixirAvro.Generator.Types.encode_value!(r.#{&1.name}, #{inspect(&1.erlavro_type)}, #{module_prefix})/) |> Enum.join(", ") %>
+      }
+    }
+  end
+
+  def from_avro(%{
+    <%= fields_meta |> Enum.map(&~s/"#{&1.name}" => #{&1.name}/) |> Enum.join(", ") %>
+  }) do
+    {:ok, %__MODULE__{
+      <%= fields_meta |> Enum.map(&~s/#{&1.name}: ElixirAvro.Generator.Types.decode_value!(#{&1.name}, #{inspect(&1.erlavro_type)}, #{module_prefix})/) |> Enum.join(", ") %>
+    }}
+    rescue
+      e -> {:error, inspect(e)}
+  end
+
+  def from_avro(%{} = invalid) do
+    actual = Map.keys(invalid) |> MapSet.new()
+    missing = MapSet.difference(@expected_keys, actual) |> Enum.join(", ")
+    {:error, "Missing keys: " <> missing}
+  end
+
+  def from_avro(_) do
+    {:error, "Expected a map"}
+  end
+end

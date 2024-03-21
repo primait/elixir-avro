@@ -1,0 +1,15 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  alls-green:
+    runs-on: ubuntu-latest
+    steps:
+      - run: ${{ !contains(needs.*.result, 'failure') }}

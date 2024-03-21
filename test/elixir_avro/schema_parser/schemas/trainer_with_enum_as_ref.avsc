@@ -1,0 +1,17 @@
+{
+    "name": "Trainer",
+    "namespace": "atp.players",
+    "type": "record",
+    "fields": [
+        {
+            "name": "fullname",
+            "type": "string",
+            "doc": "Full name of the trainer."
+        },
+        {
+            "name": "level",
+            "type": "atp.players.trainers.TrainerLevel"
+        }
+    ],
+    "doc": "A player trainer."
+}

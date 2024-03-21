@@ -1,0 +1,94 @@
+{
+    "doc": "A new player is registered in the atp ranking system.",
+    "type": "record",
+    "name": "PlayerRegistered",
+    "namespace": "atp.players",
+    "fields": [
+        {
+            "name": "player_id",
+            "type": {
+                "type": "string",
+                "logicalType": "uuid"
+            },
+            "doc": "The unique identifier of the registered player (UUID)."
+        },
+        {
+            "name": "full_name",
+            "type": "string",
+            "doc": "The full name of the registered player."
+        },
+        {
+            "name": "rank",
+            "type": "int",
+            "doc": "The current ranking of the registered player, start counting from 1."
+        },
+        {
+            "name": "registration_date",
+            "type": {
+                "type": "int",
+                "logicalType": "date"
+            },
+            "doc": "The date when the player was registered (number of UTC days from the unix epoch)."
+        },
+        {
+            "name": "sponsor_name",
+            "type": [
+                "null",
+                "string"
+            ],
+            "doc": "The name of the current sponsor (optional)."
+        },
+        {
+            "name": "trainer",
+            "type": {
+                "name": "Trainer",
+                "type": "record",
+                "fields": [
+                    {
+                        "name": "fullname",
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "slams_won",
+            "type": {
+                "type": "array",
+                "items": {
+                    "type": "record",
+                    "name": "Slam",
+                    "namespace": "atp.tournaments",
+                    "fields": [
+                        {
+                            "name": "name",
+                            "type": "string",
+                            "doc": "The name of the slam."
+                        },
+                        {
+                            "name": "year",
+                            "type": "int",
+                            "doc": "The year the slam was won."
+                        },
+                        {
+                            "name": "surface",
+                            "type": {
+                                "type": "enum",
+                                "name": "Surface",
+                                "symbols": [
+                                    "CLAY",
+                                    "GRASS",
+                                    "HARD",
+                                    "CARPET",
+                                    "GREENSET"
+                                ],
+                                "doc": "The surface of the slam (e.g., clay, grass, hard, carpet)."
+                            }
+                        }
+                    ]
+                }
+            },
+            "doc": "List of slams won by the player."
+        }
+    ]
+}

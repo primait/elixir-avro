@@ -1,0 +1,15 @@
+{
+    "name": "Person",
+    "namespace": "atp.players.info",
+    "type": "record",
+    "fields": [
+        {
+            "name": "fullname",
+            "type": "string"
+        },
+        {
+            "name": "age",
+            "type": "int"
+        }
+    ]
+}
