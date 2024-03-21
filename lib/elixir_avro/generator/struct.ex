@@ -1,4 +1,4 @@
-defmodule ElixirAvro.Generator.Content do
+defmodule ElixirAvro.Generator.Struct do
   @moduledoc false
 
   alias ElixirAvro.Generator.Names
@@ -9,14 +9,9 @@ defmodule ElixirAvro.Generator.Content do
           erlavro_type: String.t()
         }
 
-  @spec modules_content_from_schema(
-          schema_content :: String.t(),
-          read_schema_fun :: fun(),
-          module_prefix :: String.t()
-        ) :: map
-  def modules_content_from_schema(root_schema_content, read_schema_fun, module_prefix) do
-    root_schema_content
-    |> ElixirAvro.Schema.Parser.parse(read_schema_fun)
+  @spec from_schema(:avro_schema_store.store(), String.t()) :: map
+  def from_schema(lookup_table, module_prefix) do
+    lookup_table
     |> Enum.map(fn {_fullname, schema_type} -> module_content(schema_type, module_prefix) end)
     |> Enum.into(%{})
   end

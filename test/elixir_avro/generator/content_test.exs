@@ -48,11 +48,7 @@ defmodule ElixirAvro.Generator.ContentTest do
                player_registered_module_content(),
              "#{@modules_namespace}.Atp.Players.Trainer" => trainer_module_content()
            } ==
-             ContentGenerator.modules_content_from_schema(
-               schema(),
-               fn _ -> "" end,
-               @modules_namespace
-             )
+             ContentGenerator.modules_content_from_schema(schema(), @modules_namespace)
   end
 
   test "two levels of inline record" do
@@ -63,19 +59,10 @@ defmodule ElixirAvro.Generator.ContentTest do
              "#{@modules_namespace}.Atp.Players.Info.BirthInfo" => birth_info_module_content(),
              "#{@modules_namespace}.Atp.Players.Info.Person" => person_module_content()
            } ==
-             ContentGenerator.modules_content_from_schema(
-               schema2(),
-               fn _ -> "" end,
-               @modules_namespace
-             )
+             ContentGenerator.modules_content_from_schema(schema2(), @modules_namespace)
   end
 
   test "two levels of nested records with mixed cross reference and inline" do
-    read_schema_fun = fn
-      "atp.players.info.Person" -> @person_schema
-      "atp.players.Trainer" -> @trainer_schema
-    end
-
     assert %{
              "#{@modules_namespace}.Atp.Players.PlayerRegisteredTwoLevelsNestingRecords" =>
                player_registered2_module_content(),
@@ -83,11 +70,7 @@ defmodule ElixirAvro.Generator.ContentTest do
              "#{@modules_namespace}.Atp.Players.Info.BirthInfo" => birth_info_module_content(),
              "#{@modules_namespace}.Atp.Players.Info.Person" => person_module_content()
            } ==
-             ContentGenerator.modules_content_from_schema(
-               schema3(),
-               read_schema_fun,
-               @modules_namespace
-             )
+             ContentGenerator.modules_content_from_schema(schema3(), @modules_namespace)
   end
 
   test "inline enum" do
@@ -96,11 +79,7 @@ defmodule ElixirAvro.Generator.ContentTest do
              "#{@modules_namespace}.Atp.Players.Trainers.TrainerLevel" =>
                trainer_level_module_content()
            } ==
-             ContentGenerator.modules_content_from_schema(
-               schema4(),
-               fn _ -> "" end,
-               @modules_namespace
-             )
+             ContentGenerator.modules_content_from_schema(schema4(), @modules_namespace)
   end
 
   defp player_registered_module_content() do

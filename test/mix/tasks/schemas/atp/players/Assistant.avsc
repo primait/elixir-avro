@@ -1,0 +1,29 @@
+{
+    "doc": "A trainer assistant that trains a set of registered players.",
+    "type": "record",
+    "name": "Assistant",
+    "namespace": "atp.players",
+    "fields": [
+        {
+            "name": "assistant_id",
+            "type": {
+                "type": "string",
+                "logicalType": "uuid"
+            },
+            "doc": "The unique identifier of the assistant (UUID)."
+        },
+        {
+            "name": "trainer",
+            "type": "Trainer",
+            "doc": "The trainer he refers to."
+        },
+        {
+            "name": "players",
+            "type": {
+                "type": "array",
+                "items": "atp.players.PlayerRegistered"
+            },
+            "doc": "The registered players he assist."
+        }
+    ]
+}

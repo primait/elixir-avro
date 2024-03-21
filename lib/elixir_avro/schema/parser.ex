@@ -10,7 +10,7 @@ defmodule ElixirAvro.Schema.Parser do
 
   # This is not pure, since it uses ets underneath,
   # but with some effort we can make it pure if we really want to.
-  @spec parse(String.t(), (String.t() -> String.t())) :: [
+  @spec parse([:avro.avro_type()], (String.t() -> String.t())) :: [
           {String.t(), Schema.Record.t() | Schema.Enum.t()}
         ]
   def parse(root_schema_content, read_schema_fun) do

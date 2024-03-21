@@ -7,6 +7,7 @@ defmodule Mix.Tasks.ElixirAvro.Generate.Code do
   use Mix.Task
 
   alias ElixirAvro.Generator.Content, as: ContentGenerator
+  alias ElixirAvro.Schema.Resolver, as: SchemaResolver
   alias Mix.Shell.IO, as: ShellIO
 
   @impl Mix.Task
@@ -18,20 +19,9 @@ defmodule Mix.Tasks.ElixirAvro.Generate.Code do
     "#{schemas_path}/**/*.avsc"
     |> Path.wildcard()
     |> Enum.map(&File.read!/1)
-    |> Enum.map(fn schema_content ->
-      ContentGenerator.modules_content_from_schema(
-        schema_content,
-        &read_schema_fun/1,
-        prefix
-      )
-    end)
-    # For now we just override maps keys
-    |> Enum.reduce(%{}, fn map, acc ->
-      Map.merge(acc, map)
-    end)
+    |> SchemaResolver.resolve_schema()
+    |> ContentGenerator.modules_content_from_schema(prefix)
     |> Enum.each(&write_module(&1, root_path))
-
-    :ok
   end
 
   defp write_module({module_name, module_content}, target_path) do
@@ -42,11 +32,10 @@ defmodule Mix.Tasks.ElixirAvro.Generate.Code do
     File.mkdir_p!(Path.dirname(module_path))
 
     File.write!(module_path, module_content)
-    ShellIO.info("Generated #{module_path}")
-  end
 
-  defp read_schema_fun(_type) do
-    # TODO To implement
-    ""
+    # Formatting created module
+    Mix.Tasks.Format.run([module_path])
+
+    ShellIO.info("Generated #{module_path}")
   end
 end
