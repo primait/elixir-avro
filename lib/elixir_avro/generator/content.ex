@@ -22,7 +22,7 @@ defmodule ElixirAvro.Generator.Content do
   defp module_content(schema, module_prefix) do
     moduledoc = module_doc(schema)
     module_name = module_name(schema, module_prefix)
-    specific_bindings = get_spefic_bindings(schema)
+    specific_bindings = get_specific_bindings(schema)
     template_path = template_path(schema)
 
     bindings =
@@ -52,14 +52,14 @@ defmodule ElixirAvro.Generator.Content do
     |> Kernel.<>("\n")
   end
 
-  defp get_spefic_bindings(
+  defp get_specific_bindings(
          {:avro_record_type, _name, _namespace, _doc, _, _fields, _fullname, _} =
            erlavro_schema_parsed
        ) do
     [fields_meta: fields_meta(erlavro_schema_parsed)]
   end
 
-  defp get_spefic_bindings(
+  defp get_specific_bindings(
          {:avro_enum_type, _name, _namespace, _aliases, _doc, symbols, _fullname, _custom}
        ) do
     [values: symbols]
