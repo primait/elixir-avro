@@ -1,6 +1,8 @@
 defmodule ElixirAvro.ElixirEnum do
   @moduledoc """
-  In the client module we expected a module attribute @values that contains a list of strings
+  In the client module we expected a module attribute @values that contains a list of strings.
+
+  This macro will be used by the generated code, when enums, to create convenient function to access the enum variants.
   """
 
   defmacro __using__(_opts) do

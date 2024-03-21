@@ -1,6 +1,8 @@
-# ElixirAvro
+# elixir-avro
 
-**TODO: Add description**
+`elixir-avro` is a library designed to facilitate the conversion of Avro schemas into Elixir code. 
+This library bridges the gap between Avro schema definitions and Elixir code, enabling seamless integration of 
+Avro-defined data structures into Elixir projects.
 
 ## Installation
 
