@@ -24,9 +24,6 @@ defmodule ElixirAvro.ElixirEnum do
       end
 
       Enum.map(values, fn {atom, string} ->
-        defmacro unquote(:"#{atom}_")(),
-          do: unquote(atom)
-
         def unquote(atom)(),
           do: unquote(atom)
 

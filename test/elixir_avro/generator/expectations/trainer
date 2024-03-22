@@ -18,7 +18,7 @@ defmodule My.Fantastic.App.Atp.Players.Trainer do
     field :fullname, String.t(), enforce: true
   end
 
-  def to_avro_map(%__MODULE__{} = r) do
+  def to_avro(%__MODULE__{} = r) do
     {:ok,
      %{
        "fullname" =>

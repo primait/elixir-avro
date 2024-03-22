@@ -10,43 +10,56 @@ defmodule ElixirAvro.Generator.Content do
         ) :: map
   def modules_content_from_schema(root_schema_content, read_schema_fun, module_prefix) do
     root_schema_content
-    |> ElixirAvro.SchemaParser.parse(read_schema_fun)
-    |> Enum.map(fn {_fullname, erlavro_type} -> module_content(erlavro_type, module_prefix) end)
+    |> ElixirAvro.Schema.Parser.parse(read_schema_fun)
+    |> Enum.map(fn {_fullname, schema_type} -> module_content(schema_type, module_prefix) end)
     |> Enum.into(%{})
   end
 
-  @spec module_content(erlavro_schema_parsed :: tuple, module_prefix :: String.t()) ::
-          {String.t(), String.t()}
-  defp module_content(
-         erlavro_schema_parsed,
-         module_prefix
-       ) do
-    moduledoc = module_doc(erlavro_schema_parsed)
-    module_name = module_name(erlavro_schema_parsed, module_prefix)
+  @spec module_content(
+          schema :: :avro.avro_type(),
+          module_prefix :: String.t()
+        ) :: {String.t(), String.t()}
+  defp module_content(schema, module_prefix) do
+    moduledoc = module_doc(schema)
+    module_name = module_name(schema, module_prefix)
+    specific_bindings = get_specific_bindings(schema)
+    template_path = template_path(schema)
 
     bindings =
       [
         moduledoc: moduledoc,
         module_name: module_name,
         module_prefix: module_prefix
-      ] ++ get_spefic_bindings(erlavro_schema_parsed)
+      ] ++ specific_bindings
 
     module_content =
-      eval_template!(template_path(erlavro_schema_parsed), bindings,
-        locals_without_parens: [{:field, :*}]
-      )
+      eval_template!(template_path, bindings, locals_without_parens: [{:field, :*}])
 
     {module_name, module_content}
   end
 
-  defp get_spefic_bindings(
+  # Evaluate the template file at `path` using the given `bindings`, then formats
+  # it using the Elixir's code formatter and adds a trailing new line.
+  # The `opts` are passed to `Code.format_string!/2`.
+  @spec eval_template!(String.t(), Keyword.t(), Keyword.t()) :: String.t()
+  defp eval_template!(path, bindings, opts) do
+    opts = Keyword.merge([line_length: 120], opts)
+
+    path
+    |> EEx.eval_file(bindings)
+    |> Code.format_string!(opts)
+    |> to_string()
+    |> Kernel.<>("\n")
+  end
+
+  defp get_specific_bindings(
          {:avro_record_type, _name, _namespace, _doc, _, _fields, _fullname, _} =
            erlavro_schema_parsed
        ) do
     [fields_meta: fields_meta(erlavro_schema_parsed)]
   end
 
-  defp get_spefic_bindings(
+  defp get_specific_bindings(
          {:avro_enum_type, _name, _namespace, _aliases, _doc, symbols, _fullname, _custom}
        ) do
     [values: symbols]
@@ -86,20 +99,6 @@ defmodule ElixirAvro.Generator.Content do
          {:avro_enum_type, _name, _namespace, _aliases, doc, _symbols, _fullname, _custom}
        ) do
     doc
-  end
-
-  # Evaluate the template file at `path` using the given `bindings`, then formats
-  # it using the Elixir's code formatter and adds a trailing new line.
-  # The `opts` are passed to `Code.format_string!/2`.
-  @spec eval_template!(String.t(), Keyword.t(), Keyword.t()) :: String.t()
-  defp eval_template!(path, bindings, opts) do
-    opts = Keyword.merge([line_length: 120], opts)
-
-    path
-    |> EEx.eval_file(bindings)
-    |> Code.format_string!(opts)
-    |> to_string()
-    |> Kernel.<>("\n")
   end
 
   defp fields_meta({:avro_record_type, _name, _namespace, _doc, _, fields, _fullname, _}) do

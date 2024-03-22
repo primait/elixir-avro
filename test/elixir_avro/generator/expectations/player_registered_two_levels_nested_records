@@ -45,7 +45,7 @@ defmodule My.Fantastic.App.Atp.Players.PlayerRegisteredTwoLevelsNestingRecords d
     field :birth_info, My.Fantastic.App.Atp.Players.Info.BirthInfo.t(), enforce: true
   end
 
-  def to_avro_map(%__MODULE__{} = r) do
+  def to_avro(%__MODULE__{} = r) do
     {:ok,
      %{
        "player_id" =>

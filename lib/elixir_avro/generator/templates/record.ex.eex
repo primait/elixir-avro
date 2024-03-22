@@ -21,7 +21,7 @@ defmodule <%= module_name %> do
     <% end %>
   end
 
-  def to_avro_map(%__MODULE__{} = r) do
+  def to_avro(%__MODULE__{} = r) do
     {:ok,
       %{
         <%= fields_meta |> Enum.map(&~s/"#{&1.name}" => ElixirAvro.Generator.Types.encode_value!(r.#{&1.name}, #{inspect(&1.erlavro_type)}, #{module_prefix})/) |> Enum.join(", ") %>

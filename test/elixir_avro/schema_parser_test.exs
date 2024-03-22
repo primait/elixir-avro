@@ -1,7 +1,7 @@
-defmodule ElixirAvro.SchemaParserTest do
+defmodule ElixirAvro.Schema.ParserTest do
   use ExUnit.Case
 
-  alias ElixirAvro.SchemaParser
+  alias ElixirAvro.Schema
 
   @schemas_path "test/elixir_avro/schema_parser/schemas"
 
@@ -11,7 +11,7 @@ defmodule ElixirAvro.SchemaParserTest do
                "atp.players.PlayerRegistered" => player_registered_erlavro(),
                "atp.players.Trainer" => trainer_nested_erlavro()
              } ==
-               SchemaParser.parse(schema(), fn _ -> "" end)
+               Schema.Parser.parse(schema(), fn _ -> "" end)
     end
 
     test "enum" do
@@ -19,7 +19,7 @@ defmodule ElixirAvro.SchemaParserTest do
                "atp.players.Trainer" => trainer_with_enum(),
                "atp.players.trainers.TrainerLevel" => trainer_level_erlavro()
              } ==
-               SchemaParser.parse(schema4(), fn _ -> "" end)
+               Schema.Parser.parse(schema4(), fn _ -> "" end)
     end
   end
 
@@ -31,7 +31,7 @@ defmodule ElixirAvro.SchemaParserTest do
                "atp.players.PlayerRegistered" => player_registered_erlavro(),
                "atp.players.Trainer" => trainer_ref_erlavro()
              } ==
-               SchemaParser.parse(schema2(), schema_reader)
+               Schema.Parser.parse(schema2(), schema_reader)
     end
 
     test "enum" do
@@ -43,7 +43,7 @@ defmodule ElixirAvro.SchemaParserTest do
                "atp.players.Trainer" => trainer_with_enum(),
                "atp.players.trainers.TrainerLevel" => trainer_level_erlavro()
              } ==
-               SchemaParser.parse(schema5(), schema_reader)
+               Schema.Parser.parse(schema5(), schema_reader)
     end
 
     test "cross reference to the current schema" do
@@ -51,7 +51,7 @@ defmodule ElixirAvro.SchemaParserTest do
                "atp.players.Trainer" => trainer_with_same_enum_inline_and_as_ref(),
                "atp.players.trainers.TrainerLevel" => trainer_level_erlavro()
              } ==
-               SchemaParser.parse(schema6(), fn _ -> "" end)
+               Schema.Parser.parse(schema6(), fn _ -> "" end)
     end
   end
 
@@ -69,7 +69,7 @@ defmodule ElixirAvro.SchemaParserTest do
                "atp.players.info.BirthInfo" => birth_info_erlavro(),
                "atp.players.info.Person" => person_erlavro()
              } ==
-               SchemaParser.parse(schema3(), schema_reader)
+               Schema.Parser.parse(schema3(), schema_reader)
     end
   end
 
@@ -197,6 +197,7 @@ defmodule ElixirAvro.SchemaParserTest do
     }
   end
 
+  # Note: where is the enum?
   defp trainer_with_enum() do
     {
       :avro_record_type,

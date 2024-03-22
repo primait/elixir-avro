@@ -21,7 +21,7 @@ defmodule My.Fantastic.App.Atp.Players.Info.BirthInfo do
     field :father, My.Fantastic.App.Atp.Players.Info.Person.t(), enforce: true
   end
 
-  def to_avro_map(%__MODULE__{} = r) do
+  def to_avro(%__MODULE__{} = r) do
     {:ok,
      %{
        "birthday" =>

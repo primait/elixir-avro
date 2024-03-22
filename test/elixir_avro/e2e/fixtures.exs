@@ -37,7 +37,7 @@ defmodule ElixirAvro.E2E.Fixtures do
   def all_types_example(:map) do
     :struct
     |> all_types_example()
-    |> MyApp.AvroGenerated.Io.Confluent.AllTypesExample.to_avro_map()
+    |> MyApp.AvroGenerated.Io.Confluent.AllTypesExample.to_avro()
   end
 
   def all_types_example(:from_avro, map) do
@@ -75,6 +75,6 @@ defmodule ElixirAvro.E2E.Fixtures do
         union_with_refs_field: union_with_refs
       }
     }
-    |> MyApp.AvroGenerated.Io.Confluent.AllTypesExample.to_avro_map()
+    |> MyApp.AvroGenerated.Io.Confluent.AllTypesExample.to_avro()
   end
 end

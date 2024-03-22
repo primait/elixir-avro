@@ -34,7 +34,7 @@ defmodule My.Fantastic.App.Atp.Players.PlayerRegistered do
     field :trainer, My.Fantastic.App.Atp.Players.Trainer.t(), enforce: true
   end
 
-  def to_avro_map(%__MODULE__{} = r) do
+  def to_avro(%__MODULE__{} = r) do
     {:ok,
      %{
        "player_id" =>

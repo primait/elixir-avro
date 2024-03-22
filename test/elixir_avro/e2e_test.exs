@@ -36,9 +36,9 @@ defmodule ElixirAvro.E2ETest do
   test "encode and decode" do
     # We need to define a variable to reference modules just compiled
     # avoiding a warning about undefined module
-    to_avro_map = ElixirAvro.E2E.Fixtures
+    to_avro = ElixirAvro.E2E.Fixtures
 
-    assert {:ok, avro_map} = to_avro_map.all_types_example(:map)
+    assert {:ok, avro_map} = to_avro.all_types_example(:map)
 
     assert {:ok, encoded} =
              AvroraClient.encode_plain(avro_map,
@@ -79,15 +79,15 @@ defmodule ElixirAvro.E2ETest do
     assert rounded_float == Float.round(float_value, 2)
     decoded = Map.put(decoded, "float_field", rounded_float)
 
-    assert {:ok, to_avro_map.all_types_example(:struct)} ==
-             to_avro_map.all_types_example(:from_avro, decoded)
+    assert {:ok, to_avro.all_types_example(:struct)} ==
+             to_avro.all_types_example(:from_avro, decoded)
   end
 
   test "encode and decode, array as union value" do
     # We need to define a variable to reference modules just compiled
-    to_avro_map = ElixirAvro.E2E.Fixtures
+    to_avro = ElixirAvro.E2E.Fixtures
 
-    assert {:ok, avro_map} = to_avro_map.all_types_example2(:map)
+    assert {:ok, avro_map} = to_avro.all_types_example2(:map)
 
     assert {:ok, encoded} =
              AvroraClient.encode_plain(avro_map,
