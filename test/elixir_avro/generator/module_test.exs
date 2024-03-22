@@ -1,4 +1,4 @@
-defmodule ElixirAvro.Generator.ContentTest do
+defmodule ElixirAvro.Generator.ModuleTest do
   use ExUnit.Case
 
   @expectations_folder "expectations"
@@ -40,46 +40,65 @@ defmodule ElixirAvro.Generator.ContentTest do
   }
   """
 
-  alias ElixirAvro.Generator.Content, as: ContentGenerator
+  alias ElixirAvro.Generator.Module, as: ModuleGenerator
+  alias ElixirAvro.Schema.Resolver, as: SchemaResolver
 
   test "inline record" do
-    assert %{
-             "#{@modules_namespace}.Atp.Players.PlayerRegistered" =>
-               player_registered_module_content(),
-             "#{@modules_namespace}.Atp.Players.Trainer" => trainer_module_content()
-           } ==
-             ContentGenerator.modules_content_from_schema(schema(), @modules_namespace)
+    expected = %{
+      "#{@modules_namespace}.Atp.Players.PlayerRegistered" => player_registered_module_content(),
+      "#{@modules_namespace}.Atp.Players.Trainer" => trainer_module_content()
+    }
+
+    modules = modules_from_schemas(schema())
+
+    assert expected == modules
   end
 
   test "two levels of inline record" do
-    assert %{
-             "#{@modules_namespace}.Atp.Players.PlayerRegisteredTwoLevelsNestingRecords" =>
-               player_registered2_module_content(),
-             "#{@modules_namespace}.Atp.Players.Trainer" => trainer_module_content(),
-             "#{@modules_namespace}.Atp.Players.Info.BirthInfo" => birth_info_module_content(),
-             "#{@modules_namespace}.Atp.Players.Info.Person" => person_module_content()
-           } ==
-             ContentGenerator.modules_content_from_schema(schema2(), @modules_namespace)
+    expected = %{
+      "#{@modules_namespace}.Atp.Players.PlayerRegisteredTwoLevelsNestingRecords" =>
+        player_registered2_module_content(),
+      "#{@modules_namespace}.Atp.Players.Trainer" => trainer_module_content(),
+      "#{@modules_namespace}.Atp.Players.Info.BirthInfo" => birth_info_module_content(),
+      "#{@modules_namespace}.Atp.Players.Info.Person" => person_module_content()
+    }
+
+    modules = modules_from_schemas(schema2())
+
+    assert expected == modules
   end
 
   test "two levels of nested records with mixed cross reference and inline" do
-    assert %{
-             "#{@modules_namespace}.Atp.Players.PlayerRegisteredTwoLevelsNestingRecords" =>
-               player_registered2_module_content(),
-             "#{@modules_namespace}.Atp.Players.Trainer" => trainer_module_content(),
-             "#{@modules_namespace}.Atp.Players.Info.BirthInfo" => birth_info_module_content(),
-             "#{@modules_namespace}.Atp.Players.Info.Person" => person_module_content()
-           } ==
-             ContentGenerator.modules_content_from_schema(schema3(), @modules_namespace)
+    expected = %{
+      "#{@modules_namespace}.Atp.Players.PlayerRegisteredTwoLevelsNestingRecords" =>
+        player_registered2_module_content(),
+      "#{@modules_namespace}.Atp.Players.Trainer" => trainer_module_content(),
+      "#{@modules_namespace}.Atp.Players.Info.BirthInfo" => birth_info_module_content(),
+      "#{@modules_namespace}.Atp.Players.Info.Person" => person_module_content()
+    }
+
+    modules = modules_from_schemas([schema3(), @person_schema, @trainer_schema])
+
+    assert expected == modules
   end
 
   test "inline enum" do
-    assert %{
-             "#{@modules_namespace}.Atp.Players.Trainer" => trainer_with_enum_module_content(),
-             "#{@modules_namespace}.Atp.Players.Trainers.TrainerLevel" =>
-               trainer_level_module_content()
-           } ==
-             ContentGenerator.modules_content_from_schema(schema4(), @modules_namespace)
+    expected = %{
+      "#{@modules_namespace}.Atp.Players.Trainer" => trainer_with_enum_module_content(),
+      "#{@modules_namespace}.Atp.Players.Trainers.TrainerLevel" => trainer_level_module_content()
+    }
+
+    modules = modules_from_schemas(schema4())
+    assert expected == modules
+  end
+
+  @spec modules_from_schemas(String.t() | [String.t()]) :: map()
+  defp modules_from_schemas(schema) when is_binary(schema), do: modules_from_schemas([schema])
+
+  defp modules_from_schemas(schemas) do
+    schemas
+    |> SchemaResolver.resolve_types()
+    |> ModuleGenerator.modules_from_schemas(@modules_namespace)
   end
 
   defp player_registered_module_content() do

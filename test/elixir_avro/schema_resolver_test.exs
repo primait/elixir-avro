@@ -1,76 +1,92 @@
-defmodule ElixirAvro.Schema.ParserTest do
+defmodule ElixirAvro.Schema.ResolverTest do
   use ExUnit.Case
 
-  alias ElixirAvro.Schema.Parser
+  alias ElixirAvro.Schema.Resolver
 
   @schemas_path "test/elixir_avro/schema_parser/schemas"
 
   describe "inline types" do
     test "record" do
-      assert %{
-               "atp.players.PlayerRegistered" => player_registered_erlavro(),
-               "atp.players.Trainer" => trainer_nested_erlavro()
-             } ==
-               Parser.parse(schema(), fn _ -> "" end)
+      expected = %{
+        "atp.players.PlayerRegistered" => player_registered_erlavro(),
+        "atp.players.Trainer" => trainer_nested_erlavro()
+      }
+
+      types = resolve_types(schema())
+
+      assert expected == types
     end
 
     test "enum" do
-      assert %{
-               "atp.players.Trainer" => trainer_with_enum(),
-               "atp.players.trainers.TrainerLevel" => trainer_level_erlavro()
-             } ==
-               Parser.parse(schema4(), fn _ -> "" end)
+      expected = %{
+        "atp.players.Trainer" => trainer_with_enum(),
+        "atp.players.trainers.TrainerLevel" => trainer_level_erlavro()
+      }
+
+      types = resolve_types(schema4())
+
+      assert expected == types
     end
   end
 
   describe "cross references" do
     test "record" do
-      schema_reader = fn "atp.players.Trainer" -> File.read!("#{@schemas_path}/trainer.avsc") end
+      expected = %{
+        "atp.players.PlayerRegistered" => player_registered_erlavro(),
+        "atp.players.Trainer" => trainer_ref_erlavro()
+      }
 
-      assert %{
-               "atp.players.PlayerRegistered" => player_registered_erlavro(),
-               "atp.players.Trainer" => trainer_ref_erlavro()
-             } ==
-               Parser.parse(schema2(), schema_reader)
+      types = resolve_types([schema2(), File.read!("#{@schemas_path}/trainer.avsc")])
+
+      assert expected == types
     end
 
     test "enum" do
-      schema_reader = fn "atp.players.trainers.TrainerLevel" ->
-        File.read!("#{@schemas_path}/trainer_level.avsc")
-      end
+      expected = %{
+        "atp.players.Trainer" => trainer_with_enum(),
+        "atp.players.trainers.TrainerLevel" => trainer_level_erlavro()
+      }
 
-      assert %{
-               "atp.players.Trainer" => trainer_with_enum(),
-               "atp.players.trainers.TrainerLevel" => trainer_level_erlavro()
-             } ==
-               Parser.parse(schema5(), schema_reader)
+      types = resolve_types([schema5(), File.read!("#{@schemas_path}/trainer_level.avsc")])
+
+      assert expected == types
     end
 
     test "cross reference to the current schema" do
-      assert %{
-               "atp.players.Trainer" => trainer_with_same_enum_inline_and_as_ref(),
-               "atp.players.trainers.TrainerLevel" => trainer_level_erlavro()
-             } ==
-               Parser.parse(schema6(), fn _ -> "" end)
+      expected = %{
+        "atp.players.Trainer" => trainer_with_same_enum_inline_and_as_ref(),
+        "atp.players.trainers.TrainerLevel" => trainer_level_erlavro()
+      }
+
+      types = resolve_types(schema6())
+
+      assert expected == types
     end
   end
 
   describe "mixed inline and cross" do
     test "two levels of nested records" do
-      schema_reader = fn
-        "atp.players.Trainer" -> File.read!("#{@schemas_path}/trainer.avsc")
-        "atp.players.info.Person" -> File.read!("#{@schemas_path}/person.avsc")
-      end
+      expected = %{
+        "atp.players.PlayerRegisteredTwoLevelsNestingRecords" => player_registered2_erlavro(),
+        "atp.players.Trainer" => trainer_nested_erlavro(),
+        "atp.players.info.BirthInfo" => birth_info_erlavro(),
+        "atp.players.info.Person" => person_erlavro()
+      }
 
-      assert %{
-               "atp.players.PlayerRegisteredTwoLevelsNestingRecords" =>
-                 player_registered2_erlavro(),
-               "atp.players.Trainer" => trainer_nested_erlavro(),
-               "atp.players.info.BirthInfo" => birth_info_erlavro(),
-               "atp.players.info.Person" => person_erlavro()
-             } ==
-               Parser.parse(schema3(), schema_reader)
+      types = resolve_types(schema3())
+
+      assert expected == types
     end
+  end
+
+  @spec resolve_types(String.t() | [String.t()]) :: map()
+  defp resolve_types(schema) when is_binary(schema), do: resolve_types([schema])
+
+  defp resolve_types(schemas) do
+    schemas
+    |> Resolver.resolve_types()
+    |> Enum.map(&{:avro.get_type_fullname(&1), &1})
+    |> Enum.into(%{})
   end
 
   defp birth_info_erlavro() do

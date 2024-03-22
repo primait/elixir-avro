@@ -203,7 +203,7 @@ defmodule ElixirAvro.Generator.Types do
     |> Enum.map_join(" | ", &to_typespec!(&1, module_prefix))
   end
 
-  def to_typespec!(reference, module_prefix) do
+  def to_typespec!(reference, module_prefix) when is_binary(reference) do
     Names.module_name!(reference, module_prefix) <> ".t()"
   end
 
@@ -372,8 +372,7 @@ defmodule ElixirAvro.Generator.Types do
   end
 
   def encode_value(value, reference, module_prefix) when is_binary(reference) do
-    module =
-      Names.module_name!(reference, module_prefix)
+    module = reference |> Names.module_name!(module_prefix) |> String.to_atom()
 
     if function_exported?(module, :to_avro, 1) do
       module.to_avro(value)
@@ -692,7 +691,8 @@ defmodule ElixirAvro.Generator.Types do
   end
 
   def decode_value(value, reference, module_prefix) when is_binary(reference) do
-    module = Names.module_name!(reference, module_prefix)
+    module = reference |> Names.module_name!(module_prefix) |> String.to_atom()
+
     if function_exported?(module, :from_avro, 1) do
       module.from_avro(value)
     else

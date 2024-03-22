@@ -9,15 +9,17 @@ defmodule ElixirAvro.Generator.Names do
     |> Enum.map_join(".", &Macro.camelize/1)
   end
 
-  @spec module_name!(String.t(), String.t()) :: String.t() | no_return
+  @spec module_name!(String.t(), String.t()) :: String.t() | no_return()
   def module_name!("", _prefix) do
     raise ArgumentError, "empty name for module"
   end
 
   def module_name!(name, prefix) when is_binary(name) do
     case prefix do
-      _ when is_nil(prefix) or prefix == "" -> :"#{Names.camelize(name)}"
-      _ -> :"#{Names.camelize(prefix)}.#{Names.camelize(name)}"
+      _ when is_nil(prefix) or prefix == "" -> "#{camelize(name)}"
+      _ when is_binary(prefix) -> "#{camelize(prefix)}.#{camelize(name)}"
+      _ when is_atom(prefix) -> "#{prefix |> Atom.to_string() |> camelize()}.#{camelize(name)}"
+      _ -> raise ArgumentError, "invalid prefix for module: #{inspect(prefix)}"
     end
   end
 

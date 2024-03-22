@@ -1,4 +1,4 @@
-defmodule ElixirAvro.Generator.Struct do
+defmodule ElixirAvro.Generator.Module do
   @moduledoc false
 
   alias ElixirAvro.Generator.Names
@@ -9,10 +9,10 @@ defmodule ElixirAvro.Generator.Struct do
           erlavro_type: String.t()
         }
 
-  @spec from_schema(:avro_schema_store.store(), String.t()) :: map
-  def from_schema(lookup_table, module_prefix) do
-    lookup_table
-    |> Enum.map(fn {_fullname, schema_type} -> module_content(schema_type, module_prefix) end)
+  @spec modules_from_schemas([:avro.avro_type()], String.t()) :: map
+  def modules_from_schemas(schemas, module_prefix) do
+    schemas
+    |> Enum.map(&module_content(&1, module_prefix))
     |> Enum.into(%{})
   end
 
@@ -39,7 +39,8 @@ defmodule ElixirAvro.Generator.Struct do
     {module_name, module_content}
   end
 
-  @spec get_specific_bindings(tuple) :: [fields_meta: [field_meta]]
+  @spec get_specific_bindings(:avro.avro_type()) ::
+          [fields_meta: [field_meta]] | [values: [String.t()]]
   defp get_specific_bindings({:avro_record_type, _, _, _, _, _, _, _} = erlavro_schema_parsed) do
     [fields_meta: fields_meta(erlavro_schema_parsed)]
   end
@@ -87,45 +88,6 @@ defmodule ElixirAvro.Generator.Struct do
     |> Code.format_string!(opts)
     |> to_string()
     |> Kernel.<>("\n")
-  end
-
-  @spec get_specific_bindings(tuple) :: [fields_meta: [field_meta]] | [values: [String.t()]]
-  defp get_specific_bindings(
-         {:avro_record_type, _name, _namespace, _doc, _, _fields, _fullname, _} =
-           erlavro_schema_parsed
-       ) do
-    [fields_meta: fields_meta(erlavro_schema_parsed)]
-  end
-
-  defp get_specific_bindings({:avro_enum_type, _, _, _, _, symbols, _, _}) do
-    [values: symbols]
-  end
-
-  @spec template_path(tuple) :: String.t()
-  defp template_path({:avro_record_type, _, _, _, _, _, _, _}) do
-    Path.join(__DIR__, "templates/record.ex.eex")
-  end
-
-  defp template_path({:avro_enum_type, _, _, _, _, _, _, _}) do
-    Path.join(__DIR__, "templates/enum.ex.eex")
-  end
-
-  @spec module_name(tuple, String.t()) :: String.t()
-  defp module_name({:avro_record_type, _, _, _, _, _, fullname, _}, module_prefix) do
-    module_prefix <> "." <> Names.camelize(fullname)
-  end
-
-  defp module_name({:avro_enum_type, _, _, _, _, _, fullname, _}, module_prefix) do
-    module_prefix <> "." <> Names.camelize(fullname)
-  end
-
-  @spec module_doc(tuple) :: String.t()
-  defp module_doc({:avro_record_type, _, _, doc, _, _, _, _}) do
-    doc
-  end
-
-  defp module_doc({:avro_enum_type, _, _, _, doc, _, _, _}) do
-    doc
   end
 
   @spec fields_meta(tuple) :: [field_meta]
