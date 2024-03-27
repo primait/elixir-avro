@@ -76,7 +76,7 @@ Given the following Avro schema definition in `avro/user.avsc`:
 Running the following command:
 
 ```shell
-mix elixir_avro.generate.code --schemas-path avro/ --target-path lib --prefix MyApp.Avro
+mix elixir_avro_codegen --schemas-path avro/ --target-path lib --prefix MyApp.Avro
 ```
 
 Will generate the following Elixir code in `lib/`:
@@ -163,9 +163,30 @@ The generated path is a concatenation of the `--prefix` option (snake-cased) and
 ## CLI Options
 
 ```
-Usage: mix elixir_avro.generate.code <-s directory> <-t directory> <-p name> [-v]
+Usage: mix elixir_avro_codegen <-s directory> <-t directory> <-p name> [-v]
 -s, --schemas-path <directory>    The path to the directory containing the Avro schema files.
 -t, --target-path <directory>     The path to the directory where the generated Elixir code will be saved.
 -p, --prefix <name>               The prefix to be used for the generated Elixir modules.
 -v, --verbose                     Enable verbose output.
 ```
+
+## Compile-time generation
+
+In your mix.exs file, in `project` function, add the following configuration:
+
+```elixir
+  def project do
+    [
+      # ...
+      elixir_avro_codegen: [
+        schema_path: "avro",
+        target_path: "avro",
+        prefix: "MyApp.Avro"
+      ],
+      compilers: Mix.compilers() ++ [:elixir_avro_codegen],
+      # ...
+    ]
+  end
+```
+
+The parameters used in the `elixir_avro_codegen` configuration are the same as the CLI options.
