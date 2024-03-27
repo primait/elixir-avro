@@ -204,7 +204,7 @@ defmodule ElixirAvro.Generator.Types do
   end
 
   def to_typespec!(reference, module_prefix) when is_binary(reference) do
-    "#{Names.camelize(module_prefix)}.#{Names.camelize(reference)}.t()"
+    Names.module_name!(reference, module_prefix) <> ".t()"
   end
 
   def to_typespec!(type, _base_path) do
@@ -372,11 +372,7 @@ defmodule ElixirAvro.Generator.Types do
   end
 
   def encode_value(value, reference, module_prefix) when is_binary(reference) do
-    module =
-      case module_prefix do
-        _ when is_nil(module_prefix) or module_prefix == "" -> :"#{Names.camelize(reference)}"
-        _ -> :"#{module_prefix}.#{Names.camelize(reference)}"
-      end
+    module = reference |> Names.module_name!(module_prefix) |> String.to_atom()
 
     if function_exported?(module, :to_avro, 1) do
       module.to_avro(value)
@@ -695,7 +691,7 @@ defmodule ElixirAvro.Generator.Types do
   end
 
   def decode_value(value, reference, module_prefix) when is_binary(reference) do
-    module = :"#{module_prefix}.#{Names.camelize(reference)}"
+    module = reference |> Names.module_name!(module_prefix) |> String.to_atom()
 
     if function_exported?(module, :from_avro, 1) do
       module.from_avro(value)

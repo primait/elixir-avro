@@ -53,6 +53,11 @@
                 "doc": "A player trainer."
             },
             "doc": "Current trainer."
+        },
+        {
+            "name": "assistant",
+            "type": "Assistant",
+            "doc": "The assistant he is assisted by."
         }
     ]
 }

@@ -1,6 +1,8 @@
 defmodule ElixirAvro.E2ETest do
   use ExUnit.Case
 
+  alias Mix.Tasks.ElixirAvro.Generate.Code, as: ElixirAvroGenerator
+
   defmodule AvroraClient do
     use Avrora.Client,
       schemas_path: Path.join(__DIR__, "e2e/schemas")
@@ -15,7 +17,8 @@ defmodule ElixirAvro.E2ETest do
     schemas_path = Path.join(__DIR__, "e2e/schemas")
     prefix = "MyApp.AvroGenerated"
 
-    System.cmd("mix", ["elixir_avro.generate.code", target_path, schemas_path, prefix])
+    args = ["-t", target_path, "-s", schemas_path, "-p", prefix]
+    ElixirAvroGenerator.run(args)
 
     generated_path = Path.join(target_path, "my_app/avro_generated/io/confluent")
     files = generated_path |> File.ls!() |> Enum.sort()
