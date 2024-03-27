@@ -30,12 +30,12 @@ defmodule Prefix.Atp.Players.PlayerRegistered do
                  ])
 
   typedstruct do
-    field(:player_id, String.t(), enforce: true)
-    field(:full_name, String.t(), enforce: true)
-    field(:rank, integer(), enforce: true)
-    field(:registration_date, Date.t(), enforce: true)
-    field(:sponsor_name, nil | String.t(), enforce: false)
-    field(:trainer, Prefix.Atp.Players.Trainer.t(), enforce: true)
+    field :player_id, String.t(), enforce: true
+    field :full_name, String.t(), enforce: true
+    field :rank, integer(), enforce: true
+    field :registration_date, Date.t(), enforce: true
+    field :sponsor_name, nil | String.t(), enforce: false
+    field :trainer, Prefix.Atp.Players.Trainer.t(), enforce: true
   end
 
   @module_prefix Prefix

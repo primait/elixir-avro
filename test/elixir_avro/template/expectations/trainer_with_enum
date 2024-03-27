@@ -18,8 +18,8 @@ defmodule Prefix.Atp.Players.Trainer do
   @expected_keys MapSet.new(["fullname", "level"])
 
   typedstruct do
-    field(:fullname, String.t(), enforce: true)
-    field(:level, Prefix.Atp.Players.Trainers.TrainerLevel.t(), enforce: true)
+    field :fullname, String.t(), enforce: true
+    field :level, Prefix.Atp.Players.Trainers.TrainerLevel.t(), enforce: true
   end
 
   @module_prefix Prefix

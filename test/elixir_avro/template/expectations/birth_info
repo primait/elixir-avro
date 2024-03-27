@@ -18,8 +18,8 @@ defmodule Prefix.Atp.Players.Info.BirthInfo do
   @expected_keys MapSet.new(["birthday", "father"])
 
   typedstruct do
-    field(:birthday, Date.t(), enforce: true)
-    field(:father, Prefix.Atp.Players.Info.Person.t(), enforce: true)
+    field :birthday, Date.t(), enforce: true
+    field :father, Prefix.Atp.Players.Info.Person.t(), enforce: true
   end
 
   @module_prefix Prefix

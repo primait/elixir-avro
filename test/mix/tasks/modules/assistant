@@ -19,9 +19,9 @@ defmodule MyApp.AvroGenerated.Atp.Players.Assistant do
   @expected_keys MapSet.new(["assistant_id", "trainer", "players"])
 
   typedstruct do
-    field(:assistant_id, String.t(), enforce: true)
-    field(:trainer, MyApp.AvroGenerated.Atp.Players.Trainer.t(), enforce: true)
-    field(:players, [MyApp.AvroGenerated.Atp.Players.PlayerRegistered.t()], enforce: true)
+    field :assistant_id, String.t(), enforce: true
+    field :trainer, MyApp.AvroGenerated.Atp.Players.Trainer.t(), enforce: true
+    field :players, [MyApp.AvroGenerated.Atp.Players.PlayerRegistered.t()], enforce: true
   end
 
   @module_prefix MyApp.AvroGenerated

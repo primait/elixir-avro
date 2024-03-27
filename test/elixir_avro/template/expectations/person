@@ -18,8 +18,8 @@ defmodule Prefix.Atp.Players.Info.Person do
   @expected_keys MapSet.new(["fullname", "age"])
 
   typedstruct do
-    field(:fullname, String.t(), enforce: true)
-    field(:age, integer(), enforce: true)
+    field :fullname, String.t(), enforce: true
+    field :age, integer(), enforce: true
   end
 
   @module_prefix Prefix
