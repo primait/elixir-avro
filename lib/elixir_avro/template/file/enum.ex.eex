@@ -1,0 +1,25 @@
+defmodule <%= template.name %> do
+  @moduledoc """
+  DO NOT EDIT MANUALLY: This module was automatically generated from an AVRO schema.
+
+  ### Description
+  <%= template.doc %>
+
+  """
+
+  use ElixirAvro.Macro.ElixirEnum
+
+  @values [<%= ElixirAvro.Template.Renderer.values(template) %>]
+
+  def to_avro(value) do
+    {:ok, to_avro_string(value)}
+  rescue
+    _ -> {:error, :invalid_enum_value}
+  end
+
+  def from_avro(value) do
+    {:ok, from_avro_string(value)}
+  rescue
+    _ -> {:error, :invalid_enum_string_value}
+  end
+end
