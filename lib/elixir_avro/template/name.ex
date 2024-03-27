@@ -16,11 +16,11 @@ defmodule ElixirAvro.Template.Names do
   end
 
   def module_name!(name, prefix) when is_binary(name) do
-    case prefix do
-      _ when is_nil(prefix) or prefix == "" -> "#{camelize(name)}"
-      _ when is_binary(prefix) -> "#{camelize(prefix)}.#{camelize(name)}"
-      _ when is_atom(prefix) -> "#{prefix |> Atom.to_string() |> camelize()}.#{camelize(name)}"
-      _ -> raise ArgumentError, "invalid prefix for module: #{inspect(prefix)}"
+    cond do
+      is_nil(prefix) or prefix == "" -> "#{camelize(name)}"
+      is_binary(prefix) -> "#{camelize(prefix)}.#{camelize(name)}"
+      is_atom(prefix) -> "#{prefix |> Atom.to_string() |> camelize()}.#{camelize(name)}"
+      true -> raise ArgumentError, "invalid prefix for module: #{inspect(prefix)}"
     end
   end
 
