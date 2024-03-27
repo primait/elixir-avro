@@ -1,18 +1,15 @@
-defmodule My.Fantastic.App.Atp.Players.Trainers.TrainerLevel do
+defmodule Prefix.Atp.Players.Trainers.TrainerLevel do
   @moduledoc """
   DO NOT EDIT MANUALLY: This module was automatically generated from an AVRO schema.
 
+  ### Description
   Trainer certified level.
 
   """
 
   use ElixirAvro.Macro.ElixirEnum
 
-  @values [
-    "BEGINNER",
-    "INTERMEDIATE",
-    "ADVANCE"
-  ]
+  @values ["BEGINNER", "INTERMEDIATE", "ADVANCE"]
 
   def to_avro(value) do
     {:ok, to_avro_string(value)}

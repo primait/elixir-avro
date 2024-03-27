@@ -1,7 +1,7 @@
 {
     "doc": "A new player is registered in the atp ranking system.",
     "type": "record",
-    "name": "PlayerRegistered",
+    "name": "PlayerRegisteredTwoLevelsNestingRecords",
     "namespace": "atp.players",
     "fields": [
         {
@@ -42,6 +42,7 @@
             "name": "trainer",
             "type": {
                 "name": "Trainer",
+                "namespace": "atp.players",
                 "type": "record",
                 "fields": [
                     {
@@ -53,6 +54,42 @@
                 "doc": "A player trainer."
             },
             "doc": "Current trainer."
+        },
+        {
+            "name": "birth_info",
+            "type": {
+                "name": "BirthInfo",
+                "namespace": "atp.players.info",
+                "type": "record",
+                "fields": [
+                    {
+                        "name": "birthday",
+                        "type": {
+                            "type": "int",
+                            "logicalType": "date"
+                        }
+                    },
+                    {
+                        "name": "father",
+                        "type": {
+                            "name": "Person",
+                            "type": "record",
+                            "fields": [
+                                {
+                                    "name": "fullname",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "age",
+                                    "type": "int"
+                                }
+                            ]
+                        },
+                        "doc": "Father's info."
+                    }
+                ],
+                "doc": "Info about a player's birth."
+            }
         }
     ]
 }

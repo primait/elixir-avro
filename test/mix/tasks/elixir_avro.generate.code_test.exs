@@ -24,10 +24,24 @@ defmodule Mix.Tasks.ElixirAvro.Generate.CodeTest do
 
     assert @generated_files == files
 
-    Enum.map(files, fn file ->
-      generated_content = @target_path |> Path.join(@generation_path) |> Path.join(file) |> File.read!()
-      asserted_content = @assertions_path |> Path.join(file) |> String.replace(".ex", "") |> File.read!()
+    Enum.each(files, fn file ->
+      generated_file_path = @target_path |> Path.join(@generation_path) |> Path.join(file)
+      generated_content = File.read!(generated_file_path)
+      IEx.Helpers.c(generated_file_path)
+
+      asserted_content =
+        @assertions_path |> Path.join(file) |> String.replace(".ex", "") |> File.read!()
+
       assert asserted_content == generated_content
     end)
+
+    # Note: test here all generated modules functions
+    trainer = MyApp.AvroGenerated.Atp.Players.Trainer
+    trainer_name = "Trainer"
+
+    assert {:ok, %_{fullname: ^trainer_name}} = trainer.from_avro(%{"fullname" => trainer_name})
+
+    assert {:ok, %{"fullname" => ^trainer_name}} =
+             trainer.to_avro(%{__struct__: trainer, fullname: trainer_name})
   end
 end

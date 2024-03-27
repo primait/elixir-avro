@@ -1,0 +1,157 @@
+defmodule Prefix.Atp.Players.PlayerRegistered do
+  @moduledoc """
+  DO NOT EDIT MANUALLY: This module was automatically generated from an AVRO schema.
+
+  ### Description
+  A new player is registered in the atp ranking system.
+
+  ### Fields
+  - __player_id__: The unique identifier of the registered player (UUID).
+  - __full_name__: The full name of the registered player.
+  - __rank__: The current ranking of the registered player, start counting from 1.
+  - __registration_date__: The date when the player was registered (number of UTC
+      days from the unix epoch).
+  - __sponsor_name__: The name of the current sponsor (optional).
+  - __trainer__: Current trainer.
+  """
+
+  alias ElixirAvro.AvroType.Value.Decoder
+  alias ElixirAvro.AvroType.Value.Encoder
+
+  use TypedStruct
+
+  @expected_keys MapSet.new([
+                   "player_id",
+                   "full_name",
+                   "rank",
+                   "registration_date",
+                   "sponsor_name",
+                   "trainer"
+                 ])
+
+  typedstruct do
+    field(:player_id, String.t(), enforce: true)
+    field(:full_name, String.t(), enforce: true)
+    field(:rank, integer(), enforce: true)
+    field(:registration_date, Date.t(), enforce: true)
+    field(:sponsor_name, nil | String.t(), enforce: false)
+    field(:trainer, Prefix.Atp.Players.Trainer.t(), enforce: true)
+  end
+
+  @module_prefix Prefix
+
+  def to_avro(%__MODULE__{} = struct) do
+    {:ok,
+     %{
+       "player_id" =>
+         Encoder.encode_value!(
+           struct.player_id,
+           %ElixirAvro.AvroType.Primitive{
+             name: "string",
+             custom_props: [%ElixirAvro.AvroType.CustomProp{name: "logicalType", value: "uuid"}]
+           },
+           @module_prefix
+         ),
+       "full_name" =>
+         Encoder.encode_value!(
+           struct.full_name,
+           %ElixirAvro.AvroType.Primitive{name: "string", custom_props: []},
+           @module_prefix
+         ),
+       "rank" =>
+         Encoder.encode_value!(
+           struct.rank,
+           %ElixirAvro.AvroType.Primitive{name: "int", custom_props: []},
+           @module_prefix
+         ),
+       "registration_date" =>
+         Encoder.encode_value!(
+           struct.registration_date,
+           %ElixirAvro.AvroType.Primitive{
+             name: "int",
+             custom_props: [%ElixirAvro.AvroType.CustomProp{name: "logicalType", value: "date"}]
+           },
+           @module_prefix
+         ),
+       "sponsor_name" =>
+         Encoder.encode_value!(
+           struct.sponsor_name,
+           %ElixirAvro.AvroType.Union{
+             values: %{
+               0 => %ElixirAvro.AvroType.Primitive{name: "null", custom_props: []},
+               1 => %ElixirAvro.AvroType.Primitive{name: "string", custom_props: []}
+             }
+           },
+           @module_prefix
+         ),
+       "trainer" => Encoder.encode_value!(struct.trainer, "atp.players.Trainer", @module_prefix)
+     }}
+  end
+
+  def from_avro(%{
+        "player_id" => player_id,
+        "full_name" => full_name,
+        "rank" => rank,
+        "registration_date" => registration_date,
+        "sponsor_name" => sponsor_name,
+        "trainer" => trainer
+      }) do
+    {:ok,
+     %__MODULE__{
+       player_id:
+         Decoder.decode_value!(
+           player_id,
+           %ElixirAvro.AvroType.Primitive{
+             name: "string",
+             custom_props: [%ElixirAvro.AvroType.CustomProp{name: "logicalType", value: "uuid"}]
+           },
+           @module_prefix
+         ),
+       full_name:
+         Decoder.decode_value!(
+           full_name,
+           %ElixirAvro.AvroType.Primitive{name: "string", custom_props: []},
+           @module_prefix
+         ),
+       rank:
+         Decoder.decode_value!(
+           rank,
+           %ElixirAvro.AvroType.Primitive{name: "int", custom_props: []},
+           @module_prefix
+         ),
+       registration_date:
+         Decoder.decode_value!(
+           registration_date,
+           %ElixirAvro.AvroType.Primitive{
+             name: "int",
+             custom_props: [%ElixirAvro.AvroType.CustomProp{name: "logicalType", value: "date"}]
+           },
+           @module_prefix
+         ),
+       sponsor_name:
+         Decoder.decode_value!(
+           sponsor_name,
+           %ElixirAvro.AvroType.Union{
+             values: %{
+               0 => %ElixirAvro.AvroType.Primitive{name: "null", custom_props: []},
+               1 => %ElixirAvro.AvroType.Primitive{name: "string", custom_props: []}
+             }
+           },
+           @module_prefix
+         ),
+       trainer: Decoder.decode_value!(trainer, "atp.players.Trainer", @module_prefix)
+     }}
+  rescue
+    e -> {:error, inspect(e)}
+  end
+
+  def from_avro(%{} = invalid) do
+    actual = invalid |> Map.keys() |> MapSet.new()
+    missing = @expected_keys |> MapSet.difference(actual) |> Enum.join(", ")
+    {:error, "Missing keys: " <> missing}
+  end
+
+  def from_avro(_) do
+    {:error, "Expected a map"}
+  end
+end

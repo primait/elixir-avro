@@ -42,6 +42,7 @@
             "name": "trainer",
             "type": {
                 "name": "Trainer",
+                "namespace": "atp.players",
                 "type": "record",
                 "fields": [
                     {

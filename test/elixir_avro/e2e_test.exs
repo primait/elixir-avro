@@ -5,7 +5,7 @@ defmodule ElixirAvro.E2ETest do
 
   defmodule AvroraClient do
     use Avrora.Client,
-      schemas_path: Path.join(__DIR__, "e2e/schemas")
+      schemas_path: Path.join(__DIR__, "e2e/avro_schemas")
   end
 
   setup_all do
@@ -14,7 +14,7 @@ defmodule ElixirAvro.E2ETest do
     target_path = Path.join(__DIR__, "e2e/generated")
     File.rm_rf!(target_path)
 
-    schemas_path = Path.join(__DIR__, "e2e/schemas")
+    schemas_path = Path.join(__DIR__, "e2e/avro_schemas")
     prefix = "MyApp.AvroGenerated"
 
     args = ["-t", target_path, "-s", schemas_path, "-p", prefix]

@@ -1,0 +1,65 @@
+defmodule Prefix.Atp.Players.Trainer do
+  @moduledoc """
+  DO NOT EDIT MANUALLY: This module was automatically generated from an AVRO schema.
+
+  ### Description
+  A player trainer.
+
+  ### Fields
+  - __fullname__: Full name of the trainer.
+  - __level__:
+  """
+
+  alias ElixirAvro.AvroType.Value.Decoder
+  alias ElixirAvro.AvroType.Value.Encoder
+
+  use TypedStruct
+
+  @expected_keys MapSet.new(["fullname", "level"])
+
+  typedstruct do
+    field(:fullname, String.t(), enforce: true)
+    field(:level, Prefix.Atp.Players.Trainers.TrainerLevel.t(), enforce: true)
+  end
+
+  @module_prefix Prefix
+
+  def to_avro(%__MODULE__{} = struct) do
+    {:ok,
+     %{
+       "fullname" =>
+         Encoder.encode_value!(
+           struct.fullname,
+           %ElixirAvro.AvroType.Primitive{name: "string", custom_props: []},
+           @module_prefix
+         ),
+       "level" =>
+         Encoder.encode_value!(struct.level, "atp.players.trainers.TrainerLevel", @module_prefix)
+     }}
+  end
+
+  def from_avro(%{"fullname" => fullname, "level" => level}) do
+    {:ok,
+     %__MODULE__{
+       fullname:
+         Decoder.decode_value!(
+           fullname,
+           %ElixirAvro.AvroType.Primitive{name: "string", custom_props: []},
+           @module_prefix
+         ),
+       level: Decoder.decode_value!(level, "atp.players.trainers.TrainerLevel", @module_prefix)
+     }}
+  rescue
+    e -> {:error, inspect(e)}
+  end
+
+  def from_avro(%{} = invalid) do
+    actual = invalid |> Map.keys() |> MapSet.new()
+    missing = @expected_keys |> MapSet.difference(actual) |> Enum.join(", ")
+    {:error, "Missing keys: " <> missing}
+  end
+
+  def from_avro(_) do
+    {:error, "Expected a map"}
+  end
+end
