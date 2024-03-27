@@ -9,6 +9,8 @@ defmodule ElixirAvro.AvroType.Value.Decoder do
   alias ElixirAvro.AvroType.Union
   alias ElixirAvro.Template.Names
 
+  alias Noether.Either
+
   @doc ~S"""
   Decodes any avro value into its elixir format; raise if an error occurs.
 
@@ -115,12 +117,14 @@ defmodule ElixirAvro.AvroType.Value.Decoder do
   end
 
   defp decode_value(values, %Array{type: type}, module_prefix) when is_list(values) do
-    Enum.reduce_while(values, {:ok, []}, fn value, {:ok, result} ->
+    values
+    |> Enum.reduce_while({:ok, []}, fn value, {:ok, result} ->
       case decode_value(value, type, module_prefix) do
-        {:ok, decoded} -> {:cont, {:ok, result ++ [decoded]}}
+        {:ok, decoded} -> {:cont, {:ok, [decoded | result]}}
         error -> {:halt, error}
       end
     end)
+    |> Either.map(&Enum.reverse/1)
   end
 
   defp decode_value(values, %AvroType.Map{type: type}, module_prefix) when is_map(values) do
@@ -138,7 +142,7 @@ defmodule ElixirAvro.AvroType.Value.Decoder do
     Enum.reduce_while(union_values, error, fn {_id, type}, res ->
       case decode_value(value, type, module_prefix) do
         {:ok, decoded} -> {:halt, {:ok, decoded}}
-        _error -> {:cont, res}
+        _ -> {:cont, res}
       end
     end)
   end
@@ -153,7 +157,7 @@ defmodule ElixirAvro.AvroType.Value.Decoder do
     end
   end
 
-  defp decode_logical(_value, "bytes", "decimal") do
+  defp decode_logical(_, "bytes", "decimal") do
     {:error, "decimal decoding not implemented yet"}
   end
 
@@ -220,7 +224,7 @@ defmodule ElixirAvro.AvroType.Value.Decoder do
     end
   end
 
-  defp decode_logical(_value, primitive_type, logical_type) do
+  defp decode_logical(_, primitive_type, logical_type) do
     {:error, "#{logical_type}[#{primitive_type}] decoding not implemented"}
   end
 end

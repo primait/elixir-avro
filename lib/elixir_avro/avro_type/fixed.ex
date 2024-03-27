@@ -1,9 +1,9 @@
 defmodule ElixirAvro.AvroType.Fixed do
   @moduledoc nil
 
-  alias ElixirAvro.AvroType
+  @behaviour ElixirAvro.AvroType
 
-  @behaviour AvroType
+  alias ElixirAvro.AvroType
 
   @type t :: %__MODULE__{
           name: String.t(),

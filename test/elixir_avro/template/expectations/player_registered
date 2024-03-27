@@ -15,10 +15,10 @@ defmodule Prefix.Atp.Players.PlayerRegistered do
   - __trainer__: Current trainer.
   """
 
+  use TypedStruct
+
   alias ElixirAvro.AvroType.Value.Decoder
   alias ElixirAvro.AvroType.Value.Encoder
-
-  use TypedStruct
 
   @expected_keys MapSet.new([
                    "player_id",

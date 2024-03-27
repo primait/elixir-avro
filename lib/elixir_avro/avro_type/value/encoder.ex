@@ -9,6 +9,8 @@ defmodule ElixirAvro.AvroType.Value.Encoder do
   alias ElixirAvro.AvroType.Union
   alias ElixirAvro.Template.Names
 
+  alias Noether.Either
+
   require Decimal
 
   @doc ~S"""
@@ -126,14 +128,15 @@ defmodule ElixirAvro.AvroType.Value.Encoder do
     end
   end
 
-  defp encode_value(values, %Array{type: type}, module_prefix)
-       when is_list(values) do
-    Enum.reduce_while(values, {:ok, []}, fn value, {:ok, result} ->
+  defp encode_value(values, %Array{type: type}, module_prefix) when is_list(values) do
+    values
+    |> Enum.reduce_while({:ok, []}, fn value, {:ok, result} ->
       case encode_value(value, type, module_prefix) do
-        {:ok, encoded} -> {:cont, {:ok, result ++ [encoded]}}
+        {:ok, encoded} -> {:cont, {:ok, [encoded | result]}}
         error -> {:halt, error}
       end
     end)
+    |> Either.map(&Enum.reverse/1)
   end
 
   defp encode_value(values, %AvroType.Map{type: type}, module_prefix) when is_map(values) do
@@ -151,7 +154,7 @@ defmodule ElixirAvro.AvroType.Value.Encoder do
     Enum.reduce_while(union_values, error, fn {_id, type}, res ->
       case encode_value(value, type, module_prefix) do
         {:ok, encoded} -> {:halt, {:ok, encoded}}
-        _error -> {:cont, res}
+        _ -> {:cont, res}
       end
     end)
   end
@@ -166,7 +169,7 @@ defmodule ElixirAvro.AvroType.Value.Encoder do
     end
   end
 
-  defp encode_value(_value, _type, _module_prefix), do: {:error, :not_supported}
+  defp encode_value(_, _, _), do: {:error, :not_supported}
 
   # Note: this should be divided and moved in another file to be handled with macros
   defp encode_logical(value, "bytes", "decimal") do
@@ -251,7 +254,7 @@ defmodule ElixirAvro.AvroType.Value.Encoder do
     end
   end
 
-  defp encode_logical(_value, primitive_type, logical_type) do
+  defp encode_logical(_, primitive_type, logical_type) do
     {:error, "#{logical_type}[#{primitive_type}] encoding not implemented"}
   end
 end

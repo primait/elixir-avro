@@ -1,9 +1,9 @@
 defmodule ElixirAvro.AvroType.Map do
   @moduledoc nil
 
-  alias ElixirAvro.AvroType
+  @behaviour ElixirAvro.AvroType
 
-  @behaviour AvroType
+  alias ElixirAvro.AvroType
 
   @type t :: %__MODULE__{
           type: AvroType.t(),

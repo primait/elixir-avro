@@ -16,10 +16,10 @@ defmodule MyApp.AvroGenerated.Atp.Players.PlayerRegistered do
   - __assistant__: The assistant he is assisted by.
   """
 
+  use TypedStruct
+
   alias ElixirAvro.AvroType.Value.Decoder
   alias ElixirAvro.AvroType.Value.Encoder
-
-  use TypedStruct
 
   @expected_keys MapSet.new([
                    "player_id",

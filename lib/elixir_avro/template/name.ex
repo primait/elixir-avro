@@ -11,7 +11,7 @@ defmodule ElixirAvro.Template.Names do
   end
 
   @spec module_name!(String.t(), String.t()) :: String.t() | no_return()
-  def module_name!("", _prefix) do
+  def module_name!("", _) do
     raise ArgumentError, "empty name for module"
   end
 
@@ -24,7 +24,7 @@ defmodule ElixirAvro.Template.Names do
     end
   end
 
-  def module_name!(name, _prefix) do
+  def module_name!(name, _) do
     raise ArgumentError, "invalid name for module: #{inspect(name)}"
   end
 end

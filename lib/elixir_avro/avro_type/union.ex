@@ -1,9 +1,9 @@
 defmodule ElixirAvro.AvroType.Union do
   @moduledoc nil
 
-  alias ElixirAvro.AvroType
+  @behaviour ElixirAvro.AvroType
 
-  @behaviour AvroType
+  alias ElixirAvro.AvroType
 
   @type t :: %__MODULE__{
           values: %{non_neg_integer() => AvroType.t()}
@@ -12,7 +12,7 @@ defmodule ElixirAvro.AvroType.Union do
   defstruct [:values]
 
   @callback from_erl(:avro.avro_type() | :avro.record_field()) :: t()
-  def from_erl({_, id2type, _name2id}) do
+  def from_erl({_, id2type, _}) do
     values =
       id2type
       |> :gb_trees.to_list()

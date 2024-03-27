@@ -4,13 +4,12 @@ defmodule ElixirAvro.AvroType do
   """
 
   alias ElixirAvro.AvroType.Array
+  alias ElixirAvro.AvroType.Enum
   alias ElixirAvro.AvroType.Fixed
   alias ElixirAvro.AvroType.Map
   alias ElixirAvro.AvroType.Primitive
   alias ElixirAvro.AvroType.Record
   alias ElixirAvro.AvroType.Union
-
-  alias ElixirAvro.AvroType.Enum, as: AvroEnum
 
   @type t ::
           Array.t()
@@ -43,7 +42,7 @@ defmodule ElixirAvro.AvroType do
 
   @spec to_module(erlavro_type_name()) :: atom()
   defp to_module(:avro_array_type), do: Array
-  defp to_module(:avro_enum_type), do: AvroEnum
+  defp to_module(:avro_enum_type), do: Enum
   defp to_module(:avro_fixed_type), do: Fixed
   defp to_module(:avro_map_type), do: Map
   defp to_module(:avro_primitive_type), do: Primitive

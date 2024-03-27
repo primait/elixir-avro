@@ -11,10 +11,10 @@ defmodule Prefix.Atp.Players.Trainer do
   - __fit_level__: Trainer certified level by FIT.
   """
 
+  use TypedStruct
+
   alias ElixirAvro.AvroType.Value.Decoder
   alias ElixirAvro.AvroType.Value.Encoder
-
-  use TypedStruct
 
   @expected_keys MapSet.new(["fullname", "atp_level", "fit_level"])
 

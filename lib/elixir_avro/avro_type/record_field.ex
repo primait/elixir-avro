@@ -3,8 +3,6 @@ defmodule ElixirAvro.AvroType.RecordField do
 
   alias ElixirAvro.AvroType
 
-  @behaviour AvroType
-
   @type t :: %__MODULE__{
           name: String.t(),
           type: AvroType.t(),

@@ -10,10 +10,10 @@ defmodule Prefix.Atp.Players.Info.BirthInfo do
   - __father__: Father's info.
   """
 
+  use TypedStruct
+
   alias ElixirAvro.AvroType.Value.Decoder
   alias ElixirAvro.AvroType.Value.Encoder
-
-  use TypedStruct
 
   @expected_keys MapSet.new(["birthday", "father"])
 

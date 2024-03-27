@@ -1,7 +1,7 @@
 defmodule Mix.Tasks.ElixirAvro.Generate.CodeTest do
   use ExUnit.Case
 
-  alias Mix.Tasks.ElixirAvro.Generate.Code, as: ElixirAvroGenerator
+  alias Mix.Tasks.ElixirAvro
 
   @target_path "test/mix/tasks/generated/"
   @schemas_path Path.join(__DIR__, "/schemas")
@@ -18,7 +18,7 @@ defmodule Mix.Tasks.ElixirAvro.Generate.CodeTest do
   test "mix generation task" do
     File.rm_rf(@target_path)
 
-    :ok = ElixirAvroGenerator.run(@args)
+    :ok = ElixirAvro.Generate.Code.run(@args)
 
     files = @target_path |> Path.join(@generation_path) |> File.ls!() |> Enum.sort()
 

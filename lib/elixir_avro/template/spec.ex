@@ -42,7 +42,7 @@ defmodule ElixirAvro.Template.Spec do
   """
   @spec enforce?(AvroType.t()) :: boolean
   def enforce?(%Union{}), do: false
-  def enforce?(_type), do: true
+  def enforce?(_), do: true
 
   @doc ~S"""
   Returns the string to be used as elixir type for any avro type.
@@ -202,7 +202,7 @@ defmodule ElixirAvro.Template.Spec do
     Names.module_name!(reference, module_prefix) <> ".t()"
   end
 
-  def to_typedstruct_spec!(type, _base_path) do
+  def to_typedstruct_spec!(type, _) do
     raise ArgumentError, message: "unsupported avro type: #{inspect(type)}"
   end
 

@@ -17,7 +17,7 @@ defmodule ElixirAvro.Schema.Resolver do
     erlavro_schemas = Enum.map(schema_contents, &:avro_json_decoder.decode_schema(&1, opts))
 
     # Adding types to avro schema store
-    lookup_table = List.foldl(erlavro_schemas, lookup_table, &:avro_schema_store.add_type/2)
+    Enum.each(erlavro_schemas, &:avro_schema_store.add_type(&1, lookup_table))
 
     erlavro_schemas
     |> Enum.flat_map(&collect_references/1)
@@ -29,10 +29,12 @@ defmodule ElixirAvro.Schema.Resolver do
   @spec validate_schemas_format([String.t()]) :: :ok | no_return
   defp validate_schemas_format(schema_contents) do
     Enum.each(schema_contents, fn schema_content ->
-      schema_content
-      |> String.trim()
-      |> :jsone.try_decode()
-      |> case do
+      decode_result =
+        schema_content
+        |> String.trim()
+        |> :jsone.try_decode()
+
+      case decode_result do
         {:ok, _, ""} -> :ok
         _ -> exit("one or more provided avro schemas isn't a well formatted json")
       end

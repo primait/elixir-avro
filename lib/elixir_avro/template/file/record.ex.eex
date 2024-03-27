@@ -9,10 +9,10 @@ defmodule <%= template.name %> do
   <%= ElixirAvro.Template.Renderer.module_doc(template) %>
   """
 
+  use TypedStruct
+
   alias ElixirAvro.AvroType.Value.Decoder
   alias ElixirAvro.AvroType.Value.Encoder
-
-  use TypedStruct
 
   @expected_keys MapSet.new(<%= ElixirAvro.Template.Renderer.expected_keys(template) %>)
 

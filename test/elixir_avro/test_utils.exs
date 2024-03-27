@@ -60,7 +60,7 @@ defmodule ElixirAvro.TestUtils do
   end
 
   def birth_info_module_content do
-    File.read!(Path.join(__DIR__, "#{@expectations_folder}/birth_info"))
+    __DIR__ |> Path.join("#{@expectations_folder}/birth_info") |> File.read!()
   end
 
   def person_erl do
@@ -111,7 +111,7 @@ defmodule ElixirAvro.TestUtils do
   end
 
   def person_module_content do
-    File.read!(Path.join(__DIR__, "#{@expectations_folder}/person"))
+    __DIR__ |> Path.join("#{@expectations_folder}/person") |> File.read!()
   end
 
   def trainer_nested_erl do
@@ -162,7 +162,7 @@ defmodule ElixirAvro.TestUtils do
   end
 
   def trainer_module_content do
-    File.read!(Path.join(__DIR__, "#{@expectations_folder}/trainer"))
+    __DIR__ |> Path.join("#{@expectations_folder}/trainer") |> File.read!()
   end
 
   def player_registered_erl do
@@ -265,7 +265,7 @@ defmodule ElixirAvro.TestUtils do
   end
 
   def player_registered_module_content do
-    File.read!(Path.join(__DIR__, "#{@expectations_folder}/player_registered"))
+    __DIR__ |> Path.join("#{@expectations_folder}/player_registered") |> File.read!()
   end
 
   def player_registered2_erl do
@@ -386,9 +386,9 @@ defmodule ElixirAvro.TestUtils do
   end
 
   def player_registered2_module_content do
-    File.read!(
-      Path.join(__DIR__, "#{@expectations_folder}/player_registered_two_levels_nested_records")
-    )
+    __DIR__
+    |> Path.join("#{@expectations_folder}/player_registered_two_levels_nested_records")
+    |> File.read!()
   end
 
   # Note: where is the enum?
@@ -440,7 +440,7 @@ defmodule ElixirAvro.TestUtils do
   end
 
   def trainer_with_enum_module_content do
-    File.read!(Path.join(__DIR__, "#{@expectations_folder}/trainer_with_enum"))
+    __DIR__ |> Path.join("#{@expectations_folder}/trainer_with_enum") |> File.read!()
   end
 
   def trainer_with_same_enum_inline_and_as_ref_erl do
@@ -501,9 +501,9 @@ defmodule ElixirAvro.TestUtils do
   end
 
   def trainer_with_same_enum_inline_and_as_ref_module_content do
-    File.read!(
-      Path.join(__DIR__, "#{@expectations_folder}/trainer_with_same_enum_inline_and_as_ref")
-    )
+    __DIR__
+    |> Path.join("#{@expectations_folder}/trainer_with_same_enum_inline_and_as_ref")
+    |> File.read!()
   end
 
   def trainer_level_erl do
@@ -524,6 +524,6 @@ defmodule ElixirAvro.TestUtils do
   end
 
   def trainer_level_module_content do
-    File.read!(Path.join(__DIR__, "#{@expectations_folder}/trainer_level"))
+    __DIR__ |> Path.join("#{@expectations_folder}/trainer_level") |> File.read!()
   end
 end

@@ -9,7 +9,7 @@ defmodule Mix.Tasks.ElixirAvro.Generate.Code do
   alias ElixirAvro.Schema.Parser
   alias ElixirAvro.Schema.Resolver
   alias ElixirAvro.Template
-  alias Mix.Shell.IO, as: ShellIO
+  alias Mix.Shell.IO
 
   @type args :: %{
           verbose: boolean,
@@ -65,7 +65,11 @@ defmodule Mix.Tasks.ElixirAvro.Generate.Code do
     filename = Macro.underscore(module_name)
 
     module_path = Path.join(target_path, "#{filename}.ex")
-    File.mkdir_p!(Path.dirname(module_path))
+
+    module_path
+    |> Path.dirname()
+    |> File.mkdir_p!()
+
     File.write!(module_path, module_content)
 
     log("Generated #{module_path}", verbose)
@@ -81,7 +85,7 @@ defmodule Mix.Tasks.ElixirAvro.Generate.Code do
   @spec log(String.t(), boolean) :: :ok
   defp log(msg, verbose) do
     if verbose do
-      ShellIO.info(msg)
+      IO.info(msg)
     end
   end
 end
