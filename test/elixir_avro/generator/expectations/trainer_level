@@ -6,7 +6,7 @@ defmodule My.Fantastic.App.Atp.Players.Trainers.TrainerLevel do
 
   """
 
-  use ElixirAvro.ElixirEnum
+  use ElixirAvro.Macro.ElixirEnum
 
   @values [
     "BEGINNER",

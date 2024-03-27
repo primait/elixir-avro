@@ -6,7 +6,7 @@ defmodule <%= module_name %> do
 
   """
 
-  use ElixirAvro.ElixirEnum
+  use ElixirAvro.Macro.ElixirEnum
 
   @values [
     <%= values |> Enum.map(&"\"#{&1}\"") |> Enum.join(", ") %>

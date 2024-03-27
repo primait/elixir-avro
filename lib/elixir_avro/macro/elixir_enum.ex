@@ -1,4 +1,4 @@
-defmodule ElixirAvro.ElixirEnum do
+defmodule ElixirAvro.Macro.ElixirEnum do
   @moduledoc """
   In the client module we expected a module attribute @values that contains a list of strings.
 
