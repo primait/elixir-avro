@@ -103,8 +103,8 @@ defmodule MyApp.Avro.Registry.User do
   @expected_keys MapSet.new(["fullname", "role"])
 
   typedstruct do
-    field(:fullname, String.t(), enforce: true)
-    field(:role, MyApp.Avro.Registry.User.Role.t(), enforce: true)
+    field :fullname, String.t(), enforce: true
+    field :role, MyApp.Avro.Registry.User.Role.t(), enforce: true
   end
 
   @module_prefix MyApp.Avro
