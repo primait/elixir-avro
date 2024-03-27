@@ -9,14 +9,12 @@ defmodule ElixirAvro.E2ETest do
   setup_all do
     {:ok, _pid} = AvroraClient.start_link()
 
+    schemas_path = Path.join(__DIR__, "e2e/avro_schemas")
     target_path = Path.join(__DIR__, "e2e/generated")
     File.rm_rf!(target_path)
 
-    schemas_path = Path.join(__DIR__, "e2e/avro_schemas")
-    prefix = "MyApp.AvroGenerated"
-
-    args = ["-t", target_path, "-s", schemas_path, "-p", prefix]
-    Mix.Tasks.ElixirAvro.Generate.Code.run(args)
+    args = %{target_path: target_path, schemas_path: schemas_path, prefix: "MyApp.AvroGenerated"}
+    ElixirAvro.Codegen.run(args)
 
     generated_path = Path.join(target_path, "my_app/avro_generated/io/confluent")
     files = generated_path |> File.ls!() |> Enum.sort()

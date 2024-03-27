@@ -1,12 +1,10 @@
 defmodule Mix.Tasks.ElixirAvro.Generate.CodeTest do
   use ExUnit.Case
 
-  alias Mix.Tasks.ElixirAvro
-
   @target_path "test/mix/tasks/generated/"
   @schemas_path Path.join(__DIR__, "/schemas")
   @prefix "MyApp.AvroGenerated"
-  @args ["-t", @target_path, "-s", @schemas_path, "-p", @prefix]
+  @args %{target_path: @target_path, schemas_path: @schemas_path, prefix: @prefix}
 
   @generation_path "my_app/avro_generated/atp/players"
   @assertions_path "test/mix/tasks/modules/"
@@ -18,7 +16,7 @@ defmodule Mix.Tasks.ElixirAvro.Generate.CodeTest do
   test "mix generation task" do
     File.rm_rf(@target_path)
 
-    :ok = ElixirAvro.Generate.Code.run(@args)
+    :ok = ElixirAvro.Codegen.run(@args)
 
     files = @target_path |> Path.join(@generation_path) |> File.ls!() |> Enum.sort()
 
