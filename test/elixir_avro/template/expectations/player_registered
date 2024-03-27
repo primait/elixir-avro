@@ -1,4 +1,4 @@
-defmodule MyApp.AvroGenerated.Atp.Players.PlayerRegistered do
+defmodule Prefix.Atp.Players.PlayerRegistered do
   @moduledoc """
   DO NOT EDIT MANUALLY: This module was automatically generated from an AVRO schema.
 
@@ -13,7 +13,6 @@ defmodule MyApp.AvroGenerated.Atp.Players.PlayerRegistered do
       days from the unix epoch).
   - __sponsor_name__: The name of the current sponsor (optional).
   - __trainer__: Current trainer.
-  - __assistant__: The assistant he is assisted by.
   """
 
   use TypedStruct
@@ -27,8 +26,7 @@ defmodule MyApp.AvroGenerated.Atp.Players.PlayerRegistered do
                    "rank",
                    "registration_date",
                    "sponsor_name",
-                   "trainer",
-                   "assistant"
+                   "trainer"
                  ])
 
   typedstruct do
@@ -37,11 +35,10 @@ defmodule MyApp.AvroGenerated.Atp.Players.PlayerRegistered do
     field :rank, integer(), enforce: true
     field :registration_date, Date.t(), enforce: true
     field :sponsor_name, nil | String.t(), enforce: false
-    field :trainer, MyApp.AvroGenerated.Atp.Players.Trainer.t(), enforce: true
-    field :assistant, MyApp.AvroGenerated.Atp.Players.Assistant.t(), enforce: true
+    field :trainer, Prefix.Atp.Players.Trainer.t(), enforce: true
   end
 
-  @module_prefix MyApp.AvroGenerated
+  @module_prefix Prefix
 
   def to_avro(%__MODULE__{} = struct) do
     {:ok,
@@ -87,9 +84,7 @@ defmodule MyApp.AvroGenerated.Atp.Players.PlayerRegistered do
            },
            @module_prefix
          ),
-       "trainer" => Encoder.encode_value!(struct.trainer, "atp.players.Trainer", @module_prefix),
-       "assistant" =>
-         Encoder.encode_value!(struct.assistant, "atp.players.Assistant", @module_prefix)
+       "trainer" => Encoder.encode_value!(struct.trainer, "atp.players.Trainer", @module_prefix)
      }}
   end
 
@@ -99,8 +94,7 @@ defmodule MyApp.AvroGenerated.Atp.Players.PlayerRegistered do
         "rank" => rank,
         "registration_date" => registration_date,
         "sponsor_name" => sponsor_name,
-        "trainer" => trainer,
-        "assistant" => assistant
+        "trainer" => trainer
       }) do
     {:ok,
      %__MODULE__{
@@ -145,8 +139,7 @@ defmodule MyApp.AvroGenerated.Atp.Players.PlayerRegistered do
            },
            @module_prefix
          ),
-       trainer: Decoder.decode_value!(trainer, "atp.players.Trainer", @module_prefix),
-       assistant: Decoder.decode_value!(assistant, "atp.players.Assistant", @module_prefix)
+       trainer: Decoder.decode_value!(trainer, "atp.players.Trainer", @module_prefix)
      }}
   rescue
     e -> {:error, inspect(e)}

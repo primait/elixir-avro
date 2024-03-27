@@ -1,4 +1,4 @@
-defmodule MyApp.AvroGenerated.Atp.Players.Trainer do
+defmodule Prefix.Atp.Players.Trainer do
   @moduledoc """
   DO NOT EDIT MANUALLY: This module was automatically generated from an AVRO schema.
 
@@ -7,6 +7,8 @@ defmodule MyApp.AvroGenerated.Atp.Players.Trainer do
 
   ### Fields
   - __fullname__: Full name of the trainer.
+  - __atp_level__: Trainer certified level by ATP.
+  - __fit_level__: Trainer certified level by FIT.
   """
 
   use TypedStruct
@@ -14,13 +16,15 @@ defmodule MyApp.AvroGenerated.Atp.Players.Trainer do
   alias ElixirAvro.AvroType.Value.Decoder
   alias ElixirAvro.AvroType.Value.Encoder
 
-  @expected_keys MapSet.new(["fullname"])
+  @expected_keys MapSet.new(["fullname", "atp_level", "fit_level"])
 
   typedstruct do
     field :fullname, String.t(), enforce: true
+    field :atp_level, Prefix.Atp.Players.Trainers.TrainerLevel.t(), enforce: true
+    field :fit_level, Prefix.Atp.Players.Trainers.TrainerLevel.t(), enforce: true
   end
 
-  @module_prefix MyApp.AvroGenerated
+  @module_prefix Prefix
 
   def to_avro(%__MODULE__{} = struct) do
     {:ok,
@@ -30,11 +34,23 @@ defmodule MyApp.AvroGenerated.Atp.Players.Trainer do
            struct.fullname,
            %ElixirAvro.AvroType.Primitive{name: "string", custom_props: []},
            @module_prefix
+         ),
+       "atp_level" =>
+         Encoder.encode_value!(
+           struct.atp_level,
+           "atp.players.trainers.TrainerLevel",
+           @module_prefix
+         ),
+       "fit_level" =>
+         Encoder.encode_value!(
+           struct.fit_level,
+           "atp.players.trainers.TrainerLevel",
+           @module_prefix
          )
      }}
   end
 
-  def from_avro(%{"fullname" => fullname}) do
+  def from_avro(%{"fullname" => fullname, "atp_level" => atp_level, "fit_level" => fit_level}) do
     {:ok,
      %__MODULE__{
        fullname:
@@ -42,7 +58,11 @@ defmodule MyApp.AvroGenerated.Atp.Players.Trainer do
            fullname,
            %ElixirAvro.AvroType.Primitive{name: "string", custom_props: []},
            @module_prefix
-         )
+         ),
+       atp_level:
+         Decoder.decode_value!(atp_level, "atp.players.trainers.TrainerLevel", @module_prefix),
+       fit_level:
+         Decoder.decode_value!(fit_level, "atp.players.trainers.TrainerLevel", @module_prefix)
      }}
   rescue
     e -> {:error, inspect(e)}

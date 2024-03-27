@@ -1,0 +1,44 @@
+defmodule <%= template.name %> do
+  @moduledoc """
+  DO NOT EDIT MANUALLY: This module was automatically generated from an AVRO schema.
+
+  ### Description
+  <%= template.doc %>
+
+  ### Fields
+  <%= ElixirAvro.Template.Renderer.module_doc(template) %>
+  """
+
+  use TypedStruct
+
+  alias ElixirAvro.AvroType.Value.Decoder
+  alias ElixirAvro.AvroType.Value.Encoder
+
+  @expected_keys MapSet.new(<%= ElixirAvro.Template.Renderer.expected_keys(template) %>)
+
+  typedstruct do
+    <%= ElixirAvro.Template.Renderer.typedstruct_fields(template) %>
+  end
+
+  @module_prefix <%= template.prefix %>
+
+  def to_avro(%__MODULE__{} = struct) do
+    {:ok, %{<%= ElixirAvro.Template.Renderer.fields_for_to_avro(template) %>}}
+  end
+
+  def from_avro(%{<%= ElixirAvro.Template.Renderer.args_for_from_avro(template) %>}) do
+    {:ok, %__MODULE__{ <%= ElixirAvro.Template.Renderer.fields_for_from_avro(template) %> }}
+    rescue
+      e -> {:error, inspect(e)}
+  end
+
+  def from_avro(%{} = invalid) do
+    actual = invalid |> Map.keys() |> MapSet.new()
+    missing = @expected_keys |> MapSet.difference(actual) |> Enum.join(", ")
+    {:error, "Missing keys: " <> missing}
+  end
+
+  def from_avro(_) do
+    {:error, "Expected a map"}
+  end
+end

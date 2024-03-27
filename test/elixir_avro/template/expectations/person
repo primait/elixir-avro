@@ -1,12 +1,13 @@
-defmodule MyApp.AvroGenerated.Atp.Players.Trainer do
+defmodule Prefix.Atp.Players.Info.Person do
   @moduledoc """
   DO NOT EDIT MANUALLY: This module was automatically generated from an AVRO schema.
 
   ### Description
-  A player trainer.
+
 
   ### Fields
-  - __fullname__: Full name of the trainer.
+  - __fullname__:
+  - __age__:
   """
 
   use TypedStruct
@@ -14,13 +15,14 @@ defmodule MyApp.AvroGenerated.Atp.Players.Trainer do
   alias ElixirAvro.AvroType.Value.Decoder
   alias ElixirAvro.AvroType.Value.Encoder
 
-  @expected_keys MapSet.new(["fullname"])
+  @expected_keys MapSet.new(["fullname", "age"])
 
   typedstruct do
     field :fullname, String.t(), enforce: true
+    field :age, integer(), enforce: true
   end
 
-  @module_prefix MyApp.AvroGenerated
+  @module_prefix Prefix
 
   def to_avro(%__MODULE__{} = struct) do
     {:ok,
@@ -30,17 +32,29 @@ defmodule MyApp.AvroGenerated.Atp.Players.Trainer do
            struct.fullname,
            %ElixirAvro.AvroType.Primitive{name: "string", custom_props: []},
            @module_prefix
+         ),
+       "age" =>
+         Encoder.encode_value!(
+           struct.age,
+           %ElixirAvro.AvroType.Primitive{name: "int", custom_props: []},
+           @module_prefix
          )
      }}
   end
 
-  def from_avro(%{"fullname" => fullname}) do
+  def from_avro(%{"fullname" => fullname, "age" => age}) do
     {:ok,
      %__MODULE__{
        fullname:
          Decoder.decode_value!(
            fullname,
            %ElixirAvro.AvroType.Primitive{name: "string", custom_props: []},
+           @module_prefix
+         ),
+       age:
+         Decoder.decode_value!(
+           age,
+           %ElixirAvro.AvroType.Primitive{name: "int", custom_props: []},
            @module_prefix
          )
      }}

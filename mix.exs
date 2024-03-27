@@ -29,6 +29,7 @@ defmodule ElixirAvro.MixProject do
       {:decimal, "~> 2.0"},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:excribe, "~> 0.1.1"},
+      {:noether, "~> 0.2.5"},
       {:timex, "~> 3.7.11"},
       {:typed_struct, "~> 0.3.0"},
       {:uuid, "~> 1.1.8"}

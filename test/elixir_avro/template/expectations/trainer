@@ -1,4 +1,4 @@
-defmodule MyApp.AvroGenerated.Atp.Players.Trainer do
+defmodule Prefix.Atp.Players.Trainer do
   @moduledoc """
   DO NOT EDIT MANUALLY: This module was automatically generated from an AVRO schema.
 
@@ -20,7 +20,7 @@ defmodule MyApp.AvroGenerated.Atp.Players.Trainer do
     field :fullname, String.t(), enforce: true
   end
 
-  @module_prefix MyApp.AvroGenerated
+  @module_prefix Prefix
 
   def to_avro(%__MODULE__{} = struct) do
     {:ok,

@@ -3,8 +3,8 @@ defmodule ElixirAvro.Application do
 
   use Application
 
-  @impl true
-  def start(_type, _args) do
+  @impl Application
+  def start(_, _) do
     children = []
 
     opts = [strategy: :one_for_one, name: ElixirAvro.Supervisor]

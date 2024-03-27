@@ -1,0 +1,70 @@
+defmodule Prefix.Atp.Players.Info.BirthInfo do
+  @moduledoc """
+  DO NOT EDIT MANUALLY: This module was automatically generated from an AVRO schema.
+
+  ### Description
+  Info about a player's birth.
+
+  ### Fields
+  - __birthday__:
+  - __father__: Father's info.
+  """
+
+  use TypedStruct
+
+  alias ElixirAvro.AvroType.Value.Decoder
+  alias ElixirAvro.AvroType.Value.Encoder
+
+  @expected_keys MapSet.new(["birthday", "father"])
+
+  typedstruct do
+    field :birthday, Date.t(), enforce: true
+    field :father, Prefix.Atp.Players.Info.Person.t(), enforce: true
+  end
+
+  @module_prefix Prefix
+
+  def to_avro(%__MODULE__{} = struct) do
+    {:ok,
+     %{
+       "birthday" =>
+         Encoder.encode_value!(
+           struct.birthday,
+           %ElixirAvro.AvroType.Primitive{
+             name: "int",
+             custom_props: [%ElixirAvro.AvroType.CustomProp{name: "logicalType", value: "date"}]
+           },
+           @module_prefix
+         ),
+       "father" => Encoder.encode_value!(struct.father, "atp.players.info.Person", @module_prefix)
+     }}
+  end
+
+  def from_avro(%{"birthday" => birthday, "father" => father}) do
+    {:ok,
+     %__MODULE__{
+       birthday:
+         Decoder.decode_value!(
+           birthday,
+           %ElixirAvro.AvroType.Primitive{
+             name: "int",
+             custom_props: [%ElixirAvro.AvroType.CustomProp{name: "logicalType", value: "date"}]
+           },
+           @module_prefix
+         ),
+       father: Decoder.decode_value!(father, "atp.players.info.Person", @module_prefix)
+     }}
+  rescue
+    e -> {:error, inspect(e)}
+  end
+
+  def from_avro(%{} = invalid) do
+    actual = invalid |> Map.keys() |> MapSet.new()
+    missing = @expected_keys |> MapSet.difference(actual) |> Enum.join(", ")
+    {:error, "Missing keys: " <> missing}
+  end
+
+  def from_avro(_) do
+    {:error, "Expected a map"}
+  end
+end

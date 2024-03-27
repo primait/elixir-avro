@@ -6,9 +6,10 @@ defmodule Mix.Tasks.ElixirAvro.Generate.Code do
 
   use Mix.Task
 
-  alias ElixirAvro.Generator.Module, as: ModuleGenerator
-  alias ElixirAvro.Schema.Resolver, as: SchemaResolver
-  alias Mix.Shell.IO, as: ShellIO
+  alias ElixirAvro.Schema.Parser
+  alias ElixirAvro.Schema.Resolver
+  alias ElixirAvro.Template
+  alias Mix.Shell.IO
 
   @type args :: %{
           verbose: boolean,
@@ -31,9 +32,10 @@ defmodule Mix.Tasks.ElixirAvro.Generate.Code do
     "#{args.schemas_path}/**/*.avsc"
     |> Path.wildcard()
     |> Enum.map(&File.read!/1)
-    |> SchemaResolver.resolve_types()
-    |> ModuleGenerator.modules_from_schemas(args.prefix)
-    |> Enum.each(&fs_write!(&1, args.target_path, args.verbose))
+    |> Resolver.resolve_types()
+    |> Parser.from_erl_types()
+    |> Template.eval_all!(args.prefix)
+    |> Enum.each(&write!(&1, args.target_path, args.verbose))
   end
 
   @spec parse_args([String.t()]) :: args()
@@ -57,18 +59,18 @@ defmodule Mix.Tasks.ElixirAvro.Generate.Code do
     %{verbose: verbose, target_path: target_path, schemas_path: schemas_path, prefix: prefix}
   end
 
-  @spec fs_write!({String.t(), String.t()}, String.t(), boolean) :: :ok
-  defp fs_write!({module_name, module_content}, target_path, verbose) do
+  @spec write!({String.t(), String.t()}, String.t(), boolean) :: :ok
+  defp write!({module_name, module_content}, target_path, verbose) do
     # Macro.underscore replaces . with /
     filename = Macro.underscore(module_name)
 
     module_path = Path.join(target_path, "#{filename}.ex")
-    File.mkdir_p!(Path.dirname(module_path))
+
+    module_path
+    |> Path.dirname()
+    |> File.mkdir_p!()
 
     File.write!(module_path, module_content)
-
-    # Formatting created module
-    Mix.Tasks.Format.run([module_path])
 
     log("Generated #{module_path}", verbose)
   end
@@ -83,7 +85,7 @@ defmodule Mix.Tasks.ElixirAvro.Generate.Code do
   @spec log(String.t(), boolean) :: :ok
   defp log(msg, verbose) do
     if verbose do
-      ShellIO.info(msg)
+      IO.info(msg)
     end
   end
 end
