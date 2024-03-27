@@ -2,44 +2,46 @@ defmodule MyApp.AvroGenerated.Atp.Players.Trainer do
   @moduledoc """
   DO NOT EDIT MANUALLY: This module was automatically generated from an AVRO schema.
 
+  ### Description
   A player trainer.
 
-  Fields:
-
-    `fullname`: Full name of the trainer.
-
+  ### Fields
+  - __fullname__: Full name of the trainer.
   """
+
+  alias ElixirAvro.AvroType.Value.Decoder
+  alias ElixirAvro.AvroType.Value.Encoder
 
   use TypedStruct
 
   @expected_keys MapSet.new(["fullname"])
 
   typedstruct do
-    field :fullname, String.t(), enforce: true
+    field(:fullname, String.t(), enforce: true)
   end
 
-  def to_avro(%__MODULE__{} = r) do
+  @module_prefix MyApp.AvroGenerated
+
+  def to_avro(%__MODULE__{} = struct) do
     {:ok,
      %{
        "fullname" =>
-         ElixirAvro.Generator.Types.encode_value!(
-           r.fullname,
-           {:avro_primitive_type, "string", []},
-           MyApp.AvroGenerated
+         Encoder.encode_value!(
+           struct.fullname,
+           %ElixirAvro.AvroType.Primitive{name: "string", custom_props: []},
+           @module_prefix
          )
      }}
   end
 
-  def from_avro(%{
-        "fullname" => fullname
-      }) do
+  def from_avro(%{"fullname" => fullname}) do
     {:ok,
      %__MODULE__{
        fullname:
-         ElixirAvro.Generator.Types.decode_value!(
+         Decoder.decode_value!(
            fullname,
-           {:avro_primitive_type, "string", []},
-           MyApp.AvroGenerated
+           %ElixirAvro.AvroType.Primitive{name: "string", custom_props: []},
+           @module_prefix
          )
      }}
   rescue
@@ -47,8 +49,8 @@ defmodule MyApp.AvroGenerated.Atp.Players.Trainer do
   end
 
   def from_avro(%{} = invalid) do
-    actual = Map.keys(invalid) |> MapSet.new()
-    missing = MapSet.difference(@expected_keys, actual) |> Enum.join(", ")
+    actual = invalid |> Map.keys() |> MapSet.new()
+    missing = @expected_keys |> MapSet.difference(actual) |> Enum.join(", ")
     {:error, "Missing keys: " <> missing}
   end
 

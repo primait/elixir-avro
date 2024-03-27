@@ -23,7 +23,7 @@
                 "type": "array",
                 "items": "atp.players.PlayerRegistered"
             },
-            "doc": "The registered players he assist."
+            "doc": "The registered players he assists."
         }
     ]
 }

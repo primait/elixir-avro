@@ -2,76 +2,70 @@ defmodule MyApp.AvroGenerated.Atp.Players.Assistant do
   @moduledoc """
   DO NOT EDIT MANUALLY: This module was automatically generated from an AVRO schema.
 
+  ### Description
   A trainer assistant that trains a set of registered players.
 
-  Fields:
-
-    `assistant_id`: The unique identifier of the assistant (UUID).
-
-    `trainer`: The trainer he refers to.
-
-    `players`: The registered players he assist.
-
+  ### Fields
+  - __assistant_id__: The unique identifier of the assistant (UUID).
+  - __trainer__: The trainer he refers to.
+  - __players__: The registered players he assists.
   """
+
+  alias ElixirAvro.AvroType.Value.Decoder
+  alias ElixirAvro.AvroType.Value.Encoder
 
   use TypedStruct
 
   @expected_keys MapSet.new(["assistant_id", "trainer", "players"])
 
   typedstruct do
-    field :assistant_id, String.t(), enforce: true
-    field :trainer, MyApp.AvroGenerated.Atp.Players.Trainer.t(), enforce: true
-    field :players, [MyApp.AvroGenerated.Atp.Players.PlayerRegistered.t()], enforce: true
+    field(:assistant_id, String.t(), enforce: true)
+    field(:trainer, MyApp.AvroGenerated.Atp.Players.Trainer.t(), enforce: true)
+    field(:players, [MyApp.AvroGenerated.Atp.Players.PlayerRegistered.t()], enforce: true)
   end
 
-  def to_avro(%__MODULE__{} = r) do
+  @module_prefix MyApp.AvroGenerated
+
+  def to_avro(%__MODULE__{} = struct) do
     {:ok,
      %{
        "assistant_id" =>
-         ElixirAvro.Generator.Types.encode_value!(
-           r.assistant_id,
-           {:avro_primitive_type, "string", [{"logicalType", "uuid"}]},
-           MyApp.AvroGenerated
+         Encoder.encode_value!(
+           struct.assistant_id,
+           %ElixirAvro.AvroType.Primitive{
+             name: "string",
+             custom_props: [%ElixirAvro.AvroType.CustomProp{name: "logicalType", value: "uuid"}]
+           },
+           @module_prefix
          ),
-       "trainer" =>
-         ElixirAvro.Generator.Types.encode_value!(
-           r.trainer,
-           "atp.players.Trainer",
-           MyApp.AvroGenerated
-         ),
+       "trainer" => Encoder.encode_value!(struct.trainer, "atp.players.Trainer", @module_prefix),
        "players" =>
-         ElixirAvro.Generator.Types.encode_value!(
-           r.players,
-           {:avro_array_type, "atp.players.PlayerRegistered", []},
-           MyApp.AvroGenerated
+         Encoder.encode_value!(
+           struct.players,
+           %ElixirAvro.AvroType.Array{type: "atp.players.PlayerRegistered", custom_props: []},
+           @module_prefix
          )
      }}
   end
 
-  def from_avro(%{
-        "assistant_id" => assistant_id,
-        "trainer" => trainer,
-        "players" => players
-      }) do
+  def from_avro(%{"assistant_id" => assistant_id, "trainer" => trainer, "players" => players}) do
     {:ok,
      %__MODULE__{
        assistant_id:
-         ElixirAvro.Generator.Types.decode_value!(
+         Decoder.decode_value!(
            assistant_id,
-           {:avro_primitive_type, "string", [{"logicalType", "uuid"}]},
-           MyApp.AvroGenerated
+           %ElixirAvro.AvroType.Primitive{
+             name: "string",
+             custom_props: [%ElixirAvro.AvroType.CustomProp{name: "logicalType", value: "uuid"}]
+           },
+           @module_prefix
          ),
-       trainer:
-         ElixirAvro.Generator.Types.decode_value!(
-           trainer,
-           "atp.players.Trainer",
-           MyApp.AvroGenerated
-         ),
+       trainer: Decoder.decode_value!(trainer, "atp.players.Trainer", @module_prefix),
        players:
-         ElixirAvro.Generator.Types.decode_value!(
+         Decoder.decode_value!(
            players,
-           {:avro_array_type, "atp.players.PlayerRegistered", []},
-           MyApp.AvroGenerated
+           %ElixirAvro.AvroType.Array{type: "atp.players.PlayerRegistered", custom_props: []},
+           @module_prefix
          )
      }}
   rescue
@@ -79,8 +73,8 @@ defmodule MyApp.AvroGenerated.Atp.Players.Assistant do
   end
 
   def from_avro(%{} = invalid) do
-    actual = Map.keys(invalid) |> MapSet.new()
-    missing = MapSet.difference(@expected_keys, actual) |> Enum.join(", ")
+    actual = invalid |> Map.keys() |> MapSet.new()
+    missing = @expected_keys |> MapSet.difference(actual) |> Enum.join(", ")
     {:error, "Missing keys: " <> missing}
   end
 
