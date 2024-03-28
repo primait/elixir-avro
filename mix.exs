@@ -33,6 +33,7 @@ defmodule ElixirAvro.MixProject do
       {:credo, "~> 1.7"},
       {:decimal, "~> 2.0"},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:excribe, "~> 0.1.1"},
       {:noether, "~> 0.2.5"},
       {:timex, "~> 3.7.11"},
