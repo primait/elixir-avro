@@ -1,14 +1,19 @@
 defmodule ElixirAvro.MixProject do
   use Mix.Project
 
+  @source_url "https://github.com/primait/elixir-avro"
+  @version "0.1.0"
+
   def project do
     [
       app: :elixir_avro,
-      version: "0.1.0",
+      version: @version,
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
+      package: package(),
       deps: deps(),
+      docs: docs(),
       dialyzer: [plt_add_apps: [:mix]]
     ]
   end
@@ -41,6 +46,28 @@ defmodule ElixirAvro.MixProject do
       "format.all": [
         "format mix.exs \"lib/**/*.{ex,exs}\" \"test/**/*.{ex,exs}\" \"priv/**/*.{ex,exs}\""
       ]
+    ]
+  end
+
+  defp package do
+    [
+      description: "A to generate Elixir code from Avro schemas",
+      maintainers: ["Shared Services"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => @source_url}
+    ]
+  end
+
+  defp docs do
+    [
+      extras: [
+        "LICENSE.md": [title: "License"],
+        "README.md": [title: "Overview"]
+      ],
+      main: "readme",
+      source_url: @source_url,
+      source_ref: @version,
+      formatters: ["html"]
     ]
   end
 end
