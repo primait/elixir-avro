@@ -1,2 +1,5 @@
 import Config
-import_config "#{Mix.env()}.exs"
+
+if Mix.env() == :test do
+  config :logger, level: :info
+end
