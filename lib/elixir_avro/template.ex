@@ -55,7 +55,6 @@ defmodule ElixirAvro.Template do
     }
   end
 
-  @spec from_avro_type(AvroType.t(), String.t()) :: t()
   defp from_avro_type(%AvroType.Enum{doc: doc, fullname: fullname, symbols: symbols}, prefix) do
     %__MODULE__{
       doc: doc,
