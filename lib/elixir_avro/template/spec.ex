@@ -10,33 +10,6 @@ defmodule ElixirAvro.Template.Spec do
   alias ElixirAvro.AvroType.Union
   alias ElixirAvro.Template.Names
 
-  # see: https://avro.apache.org/docs/1.11.0/spec.html#schema_primitive
-  @primitive_type_spec_strings %{
-    "null" => "nil",
-    "boolean" => "boolean()",
-    "int" => "integer()",
-    "long" => "integer()",
-    "float" => "float()",
-    "double" => "float()",
-    "bytes" => "binary()",
-    "string" => "String.t()"
-  }
-
-  # see: https://avro.apache.org/docs/1.11.0/spec.html#Logical+Types
-  @logical_types_spec_strings %{
-    {"bytes", "decimal"} => "Decimal.t()",
-    {"string", "uuid"} => "String.t()",
-    {"int", "date"} => "Date.t()",
-    {"int", "time-millis"} => "Time.t()",
-    {"long", "time-micros"} => "Time.t()",
-    {"long", "timestamp-millis"} => "DateTime.t()",
-    {"long", "timestamp-micros"} => "DateTime.t()",
-    {"long", "local-timestamp-millis"} => "NaiveDateTime.t()",
-    {"long", "local-timestamp-micros"} => "NaiveDateTime.t()"
-    # avro specific custom implemented duration (incompatible with Timex.Duration) - leaving it out for the moment
-    # {"fixed", "duration"} => "ElixirBrod.Avro.Duration.t()"
-  }
-
   @doc ~S"""
   Decides whether to enforce typedstruct types or not based on which avro type is being used.
   """
@@ -115,10 +88,10 @@ defmodule ElixirAvro.Template.Spec do
   An unknown logical type or a non-existent {primitive, logical} type combination will raise an ArgumentError:
 
   iex> to_typedstruct_spec!(%Primitive{name: "int", custom_props: [%CustomProp{name: "logicalType", value: "unsupported-logical-type"}]}, "my_prefix")
-  ** (ArgumentError) unsupported type: {"int", "unsupported-logical-type"}
+  ** (ArgumentError) unsupported logical type: int => unsupported-logical-type
 
   iex> to_typedstruct_spec!(%Primitive{name: "string", custom_props: [%CustomProp{name: "logicalType", value: "timestamp-millis"}]}, "my_prefix")
-  ** (ArgumentError) unsupported type: {"string", "timestamp-millis"}
+  ** (ArgumentError) unsupported logical type: string => timestamp-millis
 
   ## Fixed types
 
@@ -136,7 +109,7 @@ defmodule ElixirAvro.Template.Spec do
   Primitive types error logic still applies:
 
   iex> to_typedstruct_spec!(%Array{type: %Primitive{name: "string", custom_props: [%CustomProp{name: "logicalType", value: "date"}]}}, "my_prefix")
-  ** (ArgumentError) unsupported type: {"string", "date"}
+  ** (ArgumentError) unsupported logical type: string => date
 
   ## Map types
 
@@ -149,7 +122,7 @@ defmodule ElixirAvro.Template.Spec do
   Primitive types error logic still applies:
 
   iex> to_typedstruct_spec!(%Map{type: %Primitive{name: "string", custom_props: [%CustomProp{name: "logicalType", value: "date"}]}}, "my_prefix")
-  ** (ArgumentError) unsupported type: {"string", "date"}
+  ** (ArgumentError) unsupported logical type: string => date
 
   ## Union types
 
@@ -173,12 +146,7 @@ defmodule ElixirAvro.Template.Spec do
   "MyPrefix.Test.Type.t()"
   """
   @spec to_typedstruct_spec!(AvroType.t(), String.t()) :: String.t() | no_return()
-  def to_typedstruct_spec!(%Primitive{name: name} = t, _) do
-    case Primitive.get_logical_type(t) do
-      nil -> get_spec_string(@primitive_type_spec_strings, name)
-      logical_type -> get_spec_string(@logical_types_spec_strings, {name, logical_type})
-    end
-  end
+  def to_typedstruct_spec!(%Primitive{} = type, _), do: Primitive.to_typedstruct_spec!(type)
 
   def to_typedstruct_spec!(%Fixed{size: size}, _) do
     "<<_::#{size * 8}>>"
@@ -204,13 +172,5 @@ defmodule ElixirAvro.Template.Spec do
 
   def to_typedstruct_spec!(type, _) do
     raise ArgumentError, message: "unsupported avro type: #{inspect(type)}"
-  end
-
-  @spec get_spec_string(map, String.t() | {String.t(), String.t()}) :: String.t() | no_return()
-  defp get_spec_string(types_map, type) do
-    case Map.get(types_map, type) do
-      nil -> raise ArgumentError, message: "unsupported type: #{inspect(type)}"
-      type -> type
-    end
   end
 end

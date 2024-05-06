@@ -121,12 +121,7 @@ defmodule ElixirAvro.AvroType.Value.Encoder do
   end
 
   @spec encode_value(any(), AvroType.t(), String.t()) :: {:ok, any()} | {:error, any()}
-  defp encode_value(value, %Primitive{name: name} = t, _) do
-    case Primitive.get_logical_type(t) do
-      nil -> Primitive.validate(value, name)
-      logical_type -> encode_logical(value, name, logical_type)
-    end
-  end
+  defp encode_value(value, %Primitive{} = type, _), do: Primitive.encode(value, type)
 
   defp encode_value(values, %Array{type: type}, module_prefix) when is_list(values) do
     values
@@ -170,91 +165,4 @@ defmodule ElixirAvro.AvroType.Value.Encoder do
   end
 
   defp encode_value(_, _, _), do: {:error, :not_supported}
-
-  # Note: this should be divided and moved in another file to be handled with macros
-  defp encode_logical(value, "bytes", "decimal") do
-    if Decimal.is_decimal(value) do
-      {:error, "decimal encoding not implemented yet"}
-    else
-      {:error, "not a decimal value"}
-    end
-  end
-
-  defp encode_logical(value, "int", "date") do
-    case value do
-      %Date{} -> {:ok, Date.diff(value, ~D[1970-01-01])}
-      _ -> {:error, "not a date value"}
-    end
-  end
-
-  defp encode_logical(value, "int", "time-millis") do
-    case value do
-      %Time{} ->
-        {:ok, Time.diff(value, ~T[00:00:00.000], :millisecond)}
-
-      _ ->
-        {:error, "not a time value"}
-    end
-  end
-
-  defp encode_logical(value, "long", "time-micros") do
-    case value do
-      %Time{} ->
-        {:ok, Time.diff(value, ~T[00:00:00.000000], :microsecond)}
-
-      _ ->
-        {:error, "not a time value"}
-    end
-  end
-
-  defp encode_logical(value, "long", "timestamp-millis") do
-    case value do
-      %DateTime{} ->
-        {:ok, DateTime.to_unix(value, :millisecond)}
-
-      _ ->
-        {:error, "not a datetime value"}
-    end
-  end
-
-  defp encode_logical(value, "long", "timestamp-micros") do
-    case value do
-      %DateTime{} ->
-        {:ok, DateTime.to_unix(value, :microsecond)}
-
-      _ ->
-        {:error, "not a datetime value"}
-    end
-  end
-
-  defp encode_logical(value, "long", "local-timestamp-millis") do
-    case value do
-      %NaiveDateTime{} ->
-        {:ok, Timex.diff(value, ~N[1970-01-01 00:00:00.000000], :millisecond)}
-
-      _ ->
-        {:error, "not a naive datetime value"}
-    end
-  end
-
-  defp encode_logical(value, "long", "local-timestamp-micros") do
-    case value do
-      %NaiveDateTime{} ->
-        {:ok, Timex.diff(value, ~N[1970-01-01 00:00:00.000000], :microsecond)}
-
-      _ ->
-        {:error, "not a naive datetime value"}
-    end
-  end
-
-  defp encode_logical(value, "string", "uuid") do
-    case UUID.info(value) do
-      {:ok, _} -> {:ok, value}
-      _ -> {:error, "not a uuid value"}
-    end
-  end
-
-  defp encode_logical(_, primitive_type, logical_type) do
-    {:error, "#{logical_type}[#{primitive_type}] encoding not implemented"}
-  end
 end
