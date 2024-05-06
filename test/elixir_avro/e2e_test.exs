@@ -130,8 +130,8 @@ defmodule ElixirAvro.AvroType.TestLogical do
   @behaviour ElixirAvro.AvroType.LogicalType
 
   @type t :: %__MODULE__{
-               value: String.t(),
-             }
+          value: String.t()
+        }
 
   defstruct [:value]
 

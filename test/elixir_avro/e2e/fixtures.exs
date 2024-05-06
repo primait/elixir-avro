@@ -17,7 +17,9 @@ defmodule ElixirAvro.E2E.Fixtures do
       date_field: ~D[2024-02-01],
       uuid_field: "34de4cfa-ced0-4b4a-bf2d-bd2e9283a40a",
       timestamp_millis_field: ~U[2024-01-01 01:02:03.000Z],
-      custom_logical_type_field: %ElixirAvro.AvroType.TestLogical{value: "custom_logical_type_value"},
+      custom_logical_type_field: %ElixirAvro.AvroType.TestLogical{
+        value: "custom_logical_type_value"
+      },
       array_field: ["item1", "item2", "item3"],
       map_field: %{"key1" => 1, "key2" => 2, "key3" => 3},
       enum_field: MyApp.AvroGenerated.Io.Confluent.ExampleEnum.symbol1(),
@@ -62,7 +64,9 @@ defmodule ElixirAvro.E2E.Fixtures do
         date_field: ~D[2024-02-01],
         uuid_field: "34de4cfa-ced0-4b4a-bf2d-bd2e9283a40a",
         timestamp_millis_field: ~U[2024-01-01 01:02:03.000Z],
-        custom_logical_type_field: %ElixirAvro.AvroType.TestLogical{value: "custom_logical_type_value"},
+        custom_logical_type_field: %ElixirAvro.AvroType.TestLogical{
+          value: "custom_logical_type_value"
+        },
         array_field: ["item1", "item2", "item3"],
         map_field: %{"key1" => 1, "key2" => 2, "key3" => 3},
         enum_field: MyApp.AvroGenerated.Io.Confluent.ExampleEnum.symbol1(),
