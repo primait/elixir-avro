@@ -199,7 +199,10 @@ defmodule ElixirAvro.Template.Spec do
   end
 
   def to_typedstruct_spec!(reference, module_prefix) when is_binary(reference) do
-    Names.module_name!(reference, module_prefix) <> ".t()"
+    reference
+    |> Names.module_name!(module_prefix)
+    |> Atom.to_string()
+    |> Kernel.<>(".t()")
   end
 
   def to_typedstruct_spec!(type, _) do

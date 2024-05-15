@@ -148,7 +148,7 @@ defmodule ElixirAvro.AvroType.Value.Decoder do
   end
 
   defp decode_value(value, reference, module_prefix) when is_binary(reference) do
-    module = reference |> Names.module_name!(module_prefix) |> String.to_atom()
+    module = Names.module_name!(reference, module_prefix)
 
     if function_exported?(module, :from_avro, 1) do
       module.from_avro(value)

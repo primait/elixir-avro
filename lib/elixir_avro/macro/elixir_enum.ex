@@ -17,7 +17,7 @@ defmodule ElixirAvro.Macro.ElixirEnum do
         __MODULE__
         |> Module.get_attribute(:values, [])
         |> Enum.uniq()
-        |> Enum.map(&{&1 |> String.downcase() |> String.to_atom(), &1})
+        |> Enum.map(&{&1 |> String.downcase() |> ElixirAvro.Template.Names.to_atom(), &1})
 
       if Enum.empty?(values) do
         raise "@values attribute should be set and not empty"

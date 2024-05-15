@@ -31,10 +31,10 @@ defmodule ElixirAvro.Codegen do
     |> Enum.each(&write!(&1, args))
   end
 
-  @spec write!({String.t(), String.t()}, args()) :: :ok
+  @spec write!({atom(), String.t()}, args()) :: :ok
   defp write!({module_name, module_content}, args) do
     # Macro.underscore replaces . with /
-    filename = Macro.underscore(module_name)
+    filename = module_name |> Atom.to_string() |> Macro.underscore()
 
     module_path = Path.join(args.target_path, "#{filename}.ex")
 

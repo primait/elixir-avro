@@ -160,7 +160,7 @@ defmodule ElixirAvro.AvroType.Value.Encoder do
   end
 
   defp encode_value(value, reference, module_prefix) when is_binary(reference) do
-    module = reference |> Names.module_name!(module_prefix) |> String.to_atom()
+    module = Names.module_name!(reference, module_prefix)
 
     if function_exported?(module, :to_avro, 1) do
       module.to_avro(value)

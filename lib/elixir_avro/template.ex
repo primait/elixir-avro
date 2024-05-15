@@ -8,7 +8,7 @@ defmodule ElixirAvro.Template do
 
   @type t :: %__MODULE__{
           doc: String.t(),
-          name: String.t(),
+          name: atom(),
           prefix: String.t(),
           fields: [AvroType.RecordField.t()],
           symbols: [String.t()]
@@ -29,7 +29,7 @@ defmodule ElixirAvro.Template do
   @spec eval_all!([AvroType.t()], String.t()) :: %{String.t() => String.t()}
   def eval_all!(types, prefix), do: types |> Enum.map(&eval!(&1, prefix)) |> Enum.into(%{})
 
-  @spec eval!(AvroType.t(), String.t()) :: {String.t(), String.t()}
+  @spec eval!(AvroType.t(), String.t()) :: {atom(), String.t()}
   def eval!(avro_type, prefix) do
     self = from_avro_type(avro_type, prefix)
     path = template_path_from_avro_type(avro_type)
