@@ -123,3 +123,21 @@ defmodule ElixirAvro.E2ETest do
             }} = AvroraClient.decode_plain(encoded, schema_name: "AllTypesExample")
   end
 end
+
+defmodule ElixirAvro.AvroType.TestLogical do
+  @moduledoc false
+
+  @behaviour ElixirAvro.AvroType.LogicalType
+
+  @type t :: %__MODULE__{
+          value: String.t()
+        }
+
+  defstruct [:value]
+
+  @impl ElixirAvro.AvroType.LogicalType
+  def decode(value), do: {:ok, %__MODULE__{value: value}}
+
+  @impl ElixirAvro.AvroType.LogicalType
+  def encode(%__MODULE__{value: value}), do: {:ok, value}
+end

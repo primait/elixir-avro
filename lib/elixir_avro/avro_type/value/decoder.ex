@@ -109,12 +109,7 @@ defmodule ElixirAvro.AvroType.Value.Decoder do
   end
 
   @spec decode_value(any(), AvroType.t(), String.t()) :: {:ok, any()} | {:error, any()}
-  defp decode_value(value, %Primitive{name: name} = t, _) do
-    case Primitive.get_logical_type(t) do
-      nil -> Primitive.validate(value, name)
-      logical_type -> decode_logical(value, name, logical_type)
-    end
-  end
+  defp decode_value(value, %Primitive{} = type, _), do: Primitive.decode(value, type)
 
   defp decode_value(values, %Array{type: type}, module_prefix) when is_list(values) do
     values
@@ -155,76 +150,5 @@ defmodule ElixirAvro.AvroType.Value.Decoder do
     else
       {:error, "unknown reference: #{reference}"}
     end
-  end
-
-  defp decode_logical(_, "bytes", "decimal") do
-    {:error, "decimal decoding not implemented yet"}
-  end
-
-  defp decode_logical(value, "int", "date") do
-    if is_integer(value) do
-      {:ok, Date.add(~D[1970-01-01], value)}
-    else
-      {:error, "not an integer value"}
-    end
-  end
-
-  defp decode_logical(value, "int", "time-millis") do
-    if is_integer(value) do
-      {:ok, Time.add(~T[00:00:00.000], value, :millisecond)}
-    else
-      {:error, "not an integer value"}
-    end
-  end
-
-  defp decode_logical(value, "long", "time-micros") do
-    if is_integer(value) do
-      {:ok, Time.add(~T[00:00:00.000000], value, :microsecond)}
-    else
-      {:error, "not an integer value"}
-    end
-  end
-
-  defp decode_logical(value, "long", "timestamp-millis") do
-    if is_integer(value) do
-      DateTime.from_unix(value, :millisecond)
-    else
-      {:error, "not an integer value"}
-    end
-  end
-
-  defp decode_logical(value, "long", "timestamp-micros") do
-    if is_integer(value) do
-      DateTime.from_unix(value, :microsecond)
-    else
-      {:error, "not an integer value"}
-    end
-  end
-
-  defp decode_logical(value, "long", "local-timestamp-millis") do
-    if is_integer(value) do
-      {:ok, Timex.add(~N[1970-01-01 00:00:00.000000], Timex.Duration.from_milliseconds(value))}
-    else
-      {:error, "not an integer value"}
-    end
-  end
-
-  defp decode_logical(value, "long", "local-timestamp-micros") do
-    if is_integer(value) do
-      {:ok, Timex.add(~N[1970-01-01 00:00:00.000000], Timex.Duration.from_microseconds(value))}
-    else
-      {:error, "not an integer value"}
-    end
-  end
-
-  defp decode_logical(value, "string", "uuid") do
-    case UUID.info(value) do
-      {:ok, _} -> {:ok, value}
-      _ -> {:error, "not a uuid value"}
-    end
-  end
-
-  defp decode_logical(_, primitive_type, logical_type) do
-    {:error, "#{logical_type}[#{primitive_type}] decoding not implemented"}
   end
 end

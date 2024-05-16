@@ -191,6 +191,41 @@ In your mix.exs file, in `project` function, add the following configuration:
 
 The parameters used in the `elixir_avro_codegen` configuration are the same as the CLI options.
 
+## Custom logical types
+
+To enable custom logical types support, you can create a module that conforms to the `ElixirAvro.AvroType.LogicalType` 
+behaviour. Implementing this behaviour necessitates the user to define `encode` and `decode` functions. 
+Here's an example:
+
+```elixir
+defmodule My.Custom.LogicalType.Enum do
+  @moduledoc false
+  @behaviour ElixirAvro.AvroType.LogicalType
+  @type t :: :admin | :user
+  @values ["admin", "user"]
+  defstruct [:value]
+
+  @impl ElixirAvro.AvroType.LogicalType
+  def decode(value) when value in @values, do: {:ok, %__MODULE__{value: String.to_atom(value)}}
+  def decode(value), do: {:error, "Unknown value #{value}"}
+
+  @impl ElixirAvro.AvroType.LogicalType
+  def encode(%__MODULE__{value: value}), do: {:ok, Atom.to_string(value)}
+end
+```
+
+Then, in order to let the library be able to use the custom logical type, you need to add the following configuration in 
+your config file:
+
+```elixir
+config :elixir_avro, :custom_logical_types, %{
+  {"string", "custom-logical-enum"} => My.Custom.LogicalType.Enum
+}
+```
+
+The key, which consists of a tuple containing the primitive type, will be utilized for deserializing the Avro custom 
+logical type, along with its corresponding name as specified in the Avro file.
+
 ## License
 
 ### The MIT License (MIT)

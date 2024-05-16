@@ -60,6 +60,13 @@
             }
         },
         {
+            "name": "custom_logical_type_field",
+            "type": {
+                "type": "string",
+                "logicalType": "test-logical"
+            }
+        },
+        {
             "name": "array_field",
             "type": {
                 "type": "array",
