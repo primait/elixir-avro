@@ -21,7 +21,7 @@ defmodule ElixirAvro.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger],
+      extra_applications: [:logger, :eex],
       mod: {ElixirAvro.Application, []}
     ]
   end
@@ -30,7 +30,7 @@ defmodule ElixirAvro.MixProject do
   defp deps do
     [
       {:avrora, "~> 0.21"},
-      {:credo, "~> 1.7"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:decimal, "~> 2.0"},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
