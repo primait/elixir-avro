@@ -29,6 +29,9 @@ defmodule Mix.Tasks.Compile.ElixirAvroCodegen do
 
   use Mix.Task.Compiler
 
+  # works with umbrella apps
+  @recursive true
+
   def run(_) do
     config = Mix.Project.config()
 
